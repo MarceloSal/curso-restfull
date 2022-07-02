@@ -1,0 +1,1056 @@
+  [1m[35m (0.9ms)[0m  [1m[34mSELECT sqlite_version(*)[0m
+  [1m[35m (3.2ms)[0m  [1m[35mCREATE TABLE "schema_migrations" ("version" varchar NOT NULL PRIMARY KEY)[0m
+  [1m[35m (2.9ms)[0m  [1m[35mCREATE TABLE "ar_internal_metadata" ("key" varchar NOT NULL PRIMARY KEY, "value" varchar, "created_at" datetime(6) NOT NULL, "updated_at" datetime(6) NOT NULL)[0m
+  [1m[36mActiveRecord::SchemaMigration Pluck (0.1ms)[0m  [1m[34mSELECT "schema_migrations"."version" FROM "schema_migrations" ORDER BY "schema_migrations"."version" ASC[0m
+Migrating to CreateContacts (20220702140705)
+  [1m[36mTRANSACTION (0.0ms)[0m  [1m[36mbegin transaction[0m
+  [1m[35m (0.2ms)[0m  [1m[35mCREATE TABLE "contacts" ("id" integer PRIMARY KEY AUTOINCREMENT NOT NULL, "name" varchar, "email" varchar, "birthdate" date, "created_at" datetime(6) NOT NULL, "updated_at" datetime(6) NOT NULL)[0m
+  [1m[36mActiveRecord::SchemaMigration Create (0.1ms)[0m  [1m[32mINSERT INTO "schema_migrations" ("version") VALUES (?)[0m  [["version", "20220702140705"]]
+  [1m[36mTRANSACTION (7.9ms)[0m  [1m[36mcommit transaction[0m
+Migrating to AddKindToContact (20220702141006)
+  [1m[36mTRANSACTION (0.0ms)[0m  [1m[36mbegin transaction[0m
+  [1m[35m (0.0ms)[0m  [1m[35mPRAGMA foreign_keys[0m
+  [1m[35m (0.0ms)[0m  [1m[35mPRAGMA defer_foreign_keys[0m
+  [1m[35m (0.0ms)[0m  [1m[35mPRAGMA defer_foreign_keys = ON[0m
+  [1m[35m (0.0ms)[0m  [1m[35mPRAGMA foreign_keys = OFF[0m
+  [1m[35m (0.1ms)[0m  [1m[35mCREATE TEMPORARY TABLE "acontacts" ("id" integer NOT NULL PRIMARY KEY, "name" varchar DEFAULT NULL, "email" varchar DEFAULT NULL, "birthdate" date DEFAULT NULL, "created_at" datetime(6) NOT NULL, "updated_at" datetime(6) NOT NULL)[0m
+  [1m[35m (0.0ms)[0m  [1m[32mINSERT INTO "acontacts" ("id","name","email","birthdate","created_at","updated_at")
+                     SELECT "id","name","email","birthdate","created_at","updated_at" FROM "contacts"[0m
+  [1m[35m (0.1ms)[0m  [1m[35mDROP TABLE "contacts"[0m
+  [1m[35m (0.1ms)[0m  [1m[35mCREATE TABLE "contacts" ("id" integer NOT NULL PRIMARY KEY, "name" varchar DEFAULT NULL, "email" varchar DEFAULT NULL, "birthdate" date DEFAULT NULL, "created_at" datetime(6) NOT NULL, "updated_at" datetime(6) NOT NULL, "kind_id" integer NOT NULL)[0m
+  [1m[35m (0.0ms)[0m  [1m[32mINSERT INTO "contacts" ("id","name","email","birthdate","created_at","updated_at")
+                     SELECT "id","name","email","birthdate","created_at","updated_at" FROM "acontacts"[0m
+  [1m[35m (0.1ms)[0m  [1m[35mDROP TABLE "acontacts"[0m
+  [1m[35m (0.0ms)[0m  [1m[35mPRAGMA defer_foreign_keys = 0[0m
+  [1m[35m (0.0ms)[0m  [1m[35mPRAGMA foreign_keys = 1[0m
+  [1m[35m (0.1ms)[0m  [1m[35mCREATE INDEX "index_contacts_on_kind_id" ON "contacts" ("kind_id")[0m
+  [1m[35m (0.0ms)[0m  [1m[35mPRAGMA foreign_keys[0m
+  [1m[35m (0.0ms)[0m  [1m[35mPRAGMA defer_foreign_keys[0m
+  [1m[35m (0.0ms)[0m  [1m[35mPRAGMA defer_foreign_keys = ON[0m
+  [1m[35m (0.0ms)[0m  [1m[35mPRAGMA foreign_keys = OFF[0m
+  [1m[35m (0.1ms)[0m  [1m[35mCREATE TEMPORARY TABLE "acontacts" ("id" integer NOT NULL PRIMARY KEY, "name" varchar DEFAULT NULL, "email" varchar DEFAULT NULL, "birthdate" date DEFAULT NULL, "created_at" datetime(6) NOT NULL, "updated_at" datetime(6) NOT NULL, "kind_id" integer NOT NULL)[0m
+  [1m[35m (0.1ms)[0m  [1m[35mCREATE INDEX "tindex_acontacts_on_kind_id" ON "acontacts" ("kind_id")[0m
+  [1m[35m (0.0ms)[0m  [1m[32mINSERT INTO "acontacts" ("id","name","email","birthdate","created_at","updated_at","kind_id")
+                     SELECT "id","name","email","birthdate","created_at","updated_at","kind_id" FROM "contacts"[0m
+  [1m[35m (0.1ms)[0m  [1m[35mDROP TABLE "contacts"[0m
+  [1m[35m (0.1ms)[0m  [1m[35mCREATE TABLE "contacts" ("id" integer NOT NULL PRIMARY KEY, "name" varchar DEFAULT NULL, "email" varchar DEFAULT NULL, "birthdate" date DEFAULT NULL, "created_at" datetime(6) NOT NULL, "updated_at" datetime(6) NOT NULL, "kind_id" integer NOT NULL, CONSTRAINT "fk_rails_c1f4bf4c44"
+FOREIGN KEY ("kind_id")
+  REFERENCES "kinds" ("id")
+)[0m
+  [1m[35m (0.1ms)[0m  [1m[35mCREATE INDEX "index_contacts_on_kind_id" ON "contacts" ("kind_id")[0m
+  [1m[35m (0.1ms)[0m  [1m[32mINSERT INTO "contacts" ("id","name","email","birthdate","created_at","updated_at","kind_id")
+                     SELECT "id","name","email","birthdate","created_at","updated_at","kind_id" FROM "acontacts"[0m
+  [1m[35m (0.0ms)[0m  [1m[35mPRAGMA defer_foreign_keys = 0[0m
+  [1m[35m (0.0ms)[0m  [1m[35mPRAGMA foreign_keys = 1[0m
+  [1m[36mTRANSACTION (0.1ms)[0m  [1m[31mrollback transaction[0m
+  [1m[35m (0.3ms)[0m  [1m[34mSELECT sqlite_version(*)[0m
+  [1m[36mActiveRecord::SchemaMigration Pluck (0.1ms)[0m  [1m[34mSELECT "schema_migrations"."version" FROM "schema_migrations" ORDER BY "schema_migrations"."version" ASC[0m
+Migrating to AddKindToContact (20220702141006)
+  [1m[36mTRANSACTION (0.0ms)[0m  [1m[36mbegin transaction[0m
+  [1m[35m (0.0ms)[0m  [1m[35mPRAGMA foreign_keys[0m
+  [1m[35m (0.0ms)[0m  [1m[35mPRAGMA defer_foreign_keys[0m
+  [1m[35m (0.0ms)[0m  [1m[35mPRAGMA defer_foreign_keys = ON[0m
+  [1m[35m (0.0ms)[0m  [1m[35mPRAGMA foreign_keys = OFF[0m
+  [1m[35m (0.1ms)[0m  [1m[35mCREATE TEMPORARY TABLE "acontacts" ("id" integer NOT NULL PRIMARY KEY, "name" varchar DEFAULT NULL, "email" varchar DEFAULT NULL, "birthdate" date DEFAULT NULL, "created_at" datetime(6) NOT NULL, "updated_at" datetime(6) NOT NULL)[0m
+  [1m[35m (0.0ms)[0m  [1m[32mINSERT INTO "acontacts" ("id","name","email","birthdate","created_at","updated_at")
+                     SELECT "id","name","email","birthdate","created_at","updated_at" FROM "contacts"[0m
+  [1m[35m (0.1ms)[0m  [1m[35mDROP TABLE "contacts"[0m
+  [1m[35m (0.1ms)[0m  [1m[35mCREATE TABLE "contacts" ("id" integer NOT NULL PRIMARY KEY, "name" varchar DEFAULT NULL, "email" varchar DEFAULT NULL, "birthdate" date DEFAULT NULL, "created_at" datetime(6) NOT NULL, "updated_at" datetime(6) NOT NULL, "kind_id" integer NOT NULL)[0m
+  [1m[35m (0.0ms)[0m  [1m[32mINSERT INTO "contacts" ("id","name","email","birthdate","created_at","updated_at")
+                     SELECT "id","name","email","birthdate","created_at","updated_at" FROM "acontacts"[0m
+  [1m[35m (0.1ms)[0m  [1m[35mDROP TABLE "acontacts"[0m
+  [1m[35m (0.0ms)[0m  [1m[35mPRAGMA defer_foreign_keys = 0[0m
+  [1m[35m (0.0ms)[0m  [1m[35mPRAGMA foreign_keys = 1[0m
+  [1m[35m (0.1ms)[0m  [1m[35mCREATE INDEX "index_contacts_on_kind_id" ON "contacts" ("kind_id")[0m
+  [1m[35m (0.0ms)[0m  [1m[35mPRAGMA foreign_keys[0m
+  [1m[35m (0.0ms)[0m  [1m[35mPRAGMA defer_foreign_keys[0m
+  [1m[35m (0.0ms)[0m  [1m[35mPRAGMA defer_foreign_keys = ON[0m
+  [1m[35m (0.0ms)[0m  [1m[35mPRAGMA foreign_keys = OFF[0m
+  [1m[35m (0.1ms)[0m  [1m[35mCREATE TEMPORARY TABLE "acontacts" ("id" integer NOT NULL PRIMARY KEY, "name" varchar DEFAULT NULL, "email" varchar DEFAULT NULL, "birthdate" date DEFAULT NULL, "created_at" datetime(6) NOT NULL, "updated_at" datetime(6) NOT NULL, "kind_id" integer NOT NULL)[0m
+  [1m[35m (0.1ms)[0m  [1m[35mCREATE INDEX "tindex_acontacts_on_kind_id" ON "acontacts" ("kind_id")[0m
+  [1m[35m (0.0ms)[0m  [1m[32mINSERT INTO "acontacts" ("id","name","email","birthdate","created_at","updated_at","kind_id")
+                     SELECT "id","name","email","birthdate","created_at","updated_at","kind_id" FROM "contacts"[0m
+  [1m[35m (0.1ms)[0m  [1m[35mDROP TABLE "contacts"[0m
+  [1m[35m (0.1ms)[0m  [1m[35mCREATE TABLE "contacts" ("id" integer NOT NULL PRIMARY KEY, "name" varchar DEFAULT NULL, "email" varchar DEFAULT NULL, "birthdate" date DEFAULT NULL, "created_at" datetime(6) NOT NULL, "updated_at" datetime(6) NOT NULL, "kind_id" integer NOT NULL, CONSTRAINT "fk_rails_c1f4bf4c44"
+FOREIGN KEY ("kind_id")
+  REFERENCES "kinds" ("id")
+)[0m
+  [1m[35m (0.1ms)[0m  [1m[35mCREATE INDEX "index_contacts_on_kind_id" ON "contacts" ("kind_id")[0m
+  [1m[35m (0.2ms)[0m  [1m[32mINSERT INTO "contacts" ("id","name","email","birthdate","created_at","updated_at","kind_id")
+                     SELECT "id","name","email","birthdate","created_at","updated_at","kind_id" FROM "acontacts"[0m
+  [1m[35m (0.0ms)[0m  [1m[35mPRAGMA defer_foreign_keys = 0[0m
+  [1m[35m (0.0ms)[0m  [1m[35mPRAGMA foreign_keys = 1[0m
+  [1m[36mTRANSACTION (0.1ms)[0m  [1m[31mrollback transaction[0m
+  [1m[35m (0.4ms)[0m  [1m[34mSELECT sqlite_version(*)[0m
+  ↳ lib/tasks/dev.rake:6:in `block (3 levels) in <main>'
+  [1m[36mTRANSACTION (0.0ms)[0m  [1m[36mbegin transaction[0m
+  ↳ lib/tasks/dev.rake:6:in `block (3 levels) in <main>'
+  [1m[36mContact Create (0.2ms)[0m  [1m[32mINSERT INTO "contacts" ("name", "email", "birthdate", "created_at", "updated_at") VALUES (?, ?, ?, ?, ?)[0m  [["name", "Pres. Wilson Senger"], ["email", "raphael.lynch@toy.com"], ["birthdate", "1965-09-21"], ["created_at", "2022-07-02 14:28:45.145817"], ["updated_at", "2022-07-02 14:28:45.145817"]]
+  ↳ lib/tasks/dev.rake:6:in `block (3 levels) in <main>'
+  [1m[36mTRANSACTION (6.2ms)[0m  [1m[36mcommit transaction[0m
+  ↳ lib/tasks/dev.rake:6:in `block (3 levels) in <main>'
+  [1m[36mTRANSACTION (0.0ms)[0m  [1m[36mbegin transaction[0m
+  ↳ lib/tasks/dev.rake:6:in `block (3 levels) in <main>'
+  [1m[36mContact Create (0.2ms)[0m  [1m[32mINSERT INTO "contacts" ("name", "email", "birthdate", "created_at", "updated_at") VALUES (?, ?, ?, ?, ?)[0m  [["name", "Glory Volkman"], ["email", "lee@rolfson-williamson.net"], ["birthdate", "1951-03-06"], ["created_at", "2022-07-02 14:28:45.155594"], ["updated_at", "2022-07-02 14:28:45.155594"]]
+  ↳ lib/tasks/dev.rake:6:in `block (3 levels) in <main>'
+  [1m[36mTRANSACTION (2.6ms)[0m  [1m[36mcommit transaction[0m
+  ↳ lib/tasks/dev.rake:6:in `block (3 levels) in <main>'
+  [1m[36mTRANSACTION (0.0ms)[0m  [1m[36mbegin transaction[0m
+  ↳ lib/tasks/dev.rake:6:in `block (3 levels) in <main>'
+  [1m[36mContact Create (0.1ms)[0m  [1m[32mINSERT INTO "contacts" ("name", "email", "birthdate", "created_at", "updated_at") VALUES (?, ?, ?, ?, ?)[0m  [["name", "Karol Mosciski"], ["email", "israel@anderson.biz"], ["birthdate", "1967-09-26"], ["created_at", "2022-07-02 14:28:45.160795"], ["updated_at", "2022-07-02 14:28:45.160795"]]
+  ↳ lib/tasks/dev.rake:6:in `block (3 levels) in <main>'
+  [1m[36mTRANSACTION (2.6ms)[0m  [1m[36mcommit transaction[0m
+  ↳ lib/tasks/dev.rake:6:in `block (3 levels) in <main>'
+  [1m[36mTRANSACTION (0.0ms)[0m  [1m[36mbegin transaction[0m
+  ↳ lib/tasks/dev.rake:6:in `block (3 levels) in <main>'
+  [1m[36mContact Create (0.1ms)[0m  [1m[32mINSERT INTO "contacts" ("name", "email", "birthdate", "created_at", "updated_at") VALUES (?, ?, ?, ?, ?)[0m  [["name", "Victoria Hegmann"], ["email", "ericka.stiedemann@homenick.io"], ["birthdate", "1988-05-08"], ["created_at", "2022-07-02 14:28:45.165893"], ["updated_at", "2022-07-02 14:28:45.165893"]]
+  ↳ lib/tasks/dev.rake:6:in `block (3 levels) in <main>'
+  [1m[36mTRANSACTION (2.3ms)[0m  [1m[36mcommit transaction[0m
+  ↳ lib/tasks/dev.rake:6:in `block (3 levels) in <main>'
+  [1m[36mTRANSACTION (0.0ms)[0m  [1m[36mbegin transaction[0m
+  ↳ lib/tasks/dev.rake:6:in `block (3 levels) in <main>'
+  [1m[36mContact Create (0.1ms)[0m  [1m[32mINSERT INTO "contacts" ("name", "email", "birthdate", "created_at", "updated_at") VALUES (?, ?, ?, ?, ?)[0m  [["name", "Cristal Goyette"], ["email", "herman@bins.name"], ["birthdate", "1982-02-25"], ["created_at", "2022-07-02 14:28:45.170892"], ["updated_at", "2022-07-02 14:28:45.170892"]]
+  ↳ lib/tasks/dev.rake:6:in `block (3 levels) in <main>'
+  [1m[36mTRANSACTION (2.3ms)[0m  [1m[36mcommit transaction[0m
+  ↳ lib/tasks/dev.rake:6:in `block (3 levels) in <main>'
+  [1m[36mTRANSACTION (0.0ms)[0m  [1m[36mbegin transaction[0m
+  ↳ lib/tasks/dev.rake:6:in `block (3 levels) in <main>'
+  [1m[36mContact Create (0.1ms)[0m  [1m[32mINSERT INTO "contacts" ("name", "email", "birthdate", "created_at", "updated_at") VALUES (?, ?, ?, ?, ?)[0m  [["name", "Thaddeus Skiles"], ["email", "douglass@mayer.org"], ["birthdate", "1965-10-18"], ["created_at", "2022-07-02 14:28:45.175835"], ["updated_at", "2022-07-02 14:28:45.175835"]]
+  ↳ lib/tasks/dev.rake:6:in `block (3 levels) in <main>'
+  [1m[36mTRANSACTION (2.6ms)[0m  [1m[36mcommit transaction[0m
+  ↳ lib/tasks/dev.rake:6:in `block (3 levels) in <main>'
+  [1m[36mTRANSACTION (0.0ms)[0m  [1m[36mbegin transaction[0m
+  ↳ lib/tasks/dev.rake:6:in `block (3 levels) in <main>'
+  [1m[36mContact Create (0.1ms)[0m  [1m[32mINSERT INTO "contacts" ("name", "email", "birthdate", "created_at", "updated_at") VALUES (?, ?, ?, ?, ?)[0m  [["name", "Allie Little DVM"], ["email", "xochitl_renner@collins.biz"], ["birthdate", "1971-12-20"], ["created_at", "2022-07-02 14:28:45.180888"], ["updated_at", "2022-07-02 14:28:45.180888"]]
+  ↳ lib/tasks/dev.rake:6:in `block (3 levels) in <main>'
+  [1m[36mTRANSACTION (2.6ms)[0m  [1m[36mcommit transaction[0m
+  ↳ lib/tasks/dev.rake:6:in `block (3 levels) in <main>'
+  [1m[36mTRANSACTION (0.0ms)[0m  [1m[36mbegin transaction[0m
+  ↳ lib/tasks/dev.rake:6:in `block (3 levels) in <main>'
+  [1m[36mContact Create (0.1ms)[0m  [1m[32mINSERT INTO "contacts" ("name", "email", "birthdate", "created_at", "updated_at") VALUES (?, ?, ?, ?, ?)[0m  [["name", "Alvera Huels"], ["email", "galen.lebsack@abshire.org"], ["birthdate", "1960-08-05"], ["created_at", "2022-07-02 14:28:45.186113"], ["updated_at", "2022-07-02 14:28:45.186113"]]
+  ↳ lib/tasks/dev.rake:6:in `block (3 levels) in <main>'
+  [1m[36mTRANSACTION (2.7ms)[0m  [1m[36mcommit transaction[0m
+  ↳ lib/tasks/dev.rake:6:in `block (3 levels) in <main>'
+  [1m[36mTRANSACTION (0.0ms)[0m  [1m[36mbegin transaction[0m
+  ↳ lib/tasks/dev.rake:6:in `block (3 levels) in <main>'
+  [1m[36mContact Create (0.1ms)[0m  [1m[32mINSERT INTO "contacts" ("name", "email", "birthdate", "created_at", "updated_at") VALUES (?, ?, ?, ?, ?)[0m  [["name", "Renda Mayert"], ["email", "sylvester_marvin@mills.biz"], ["birthdate", "1974-12-26"], ["created_at", "2022-07-02 14:28:45.191388"], ["updated_at", "2022-07-02 14:28:45.191388"]]
+  ↳ lib/tasks/dev.rake:6:in `block (3 levels) in <main>'
+  [1m[36mTRANSACTION (4.3ms)[0m  [1m[36mcommit transaction[0m
+  ↳ lib/tasks/dev.rake:6:in `block (3 levels) in <main>'
+  [1m[36mTRANSACTION (0.0ms)[0m  [1m[36mbegin transaction[0m
+  ↳ lib/tasks/dev.rake:6:in `block (3 levels) in <main>'
+  [1m[36mContact Create (0.1ms)[0m  [1m[32mINSERT INTO "contacts" ("name", "email", "birthdate", "created_at", "updated_at") VALUES (?, ?, ?, ?, ?)[0m  [["name", "Parthenia Macejkovic"], ["email", "odilia.price@moen.name"], ["birthdate", "1983-12-21"], ["created_at", "2022-07-02 14:28:45.198328"], ["updated_at", "2022-07-02 14:28:45.198328"]]
+  ↳ lib/tasks/dev.rake:6:in `block (3 levels) in <main>'
+  [1m[36mTRANSACTION (2.5ms)[0m  [1m[36mcommit transaction[0m
+  ↳ lib/tasks/dev.rake:6:in `block (3 levels) in <main>'
+  [1m[36mTRANSACTION (0.0ms)[0m  [1m[36mbegin transaction[0m
+  ↳ lib/tasks/dev.rake:6:in `block (3 levels) in <main>'
+  [1m[36mContact Create (0.1ms)[0m  [1m[32mINSERT INTO "contacts" ("name", "email", "birthdate", "created_at", "updated_at") VALUES (?, ?, ?, ?, ?)[0m  [["name", "Gov. Arleen Schamberger"], ["email", "idalia_christiansen@bogan.co"], ["birthdate", "1999-06-12"], ["created_at", "2022-07-02 14:28:45.203565"], ["updated_at", "2022-07-02 14:28:45.203565"]]
+  ↳ lib/tasks/dev.rake:6:in `block (3 levels) in <main>'
+  [1m[36mTRANSACTION (2.6ms)[0m  [1m[36mcommit transaction[0m
+  ↳ lib/tasks/dev.rake:6:in `block (3 levels) in <main>'
+  [1m[36mTRANSACTION (0.0ms)[0m  [1m[36mbegin transaction[0m
+  ↳ lib/tasks/dev.rake:6:in `block (3 levels) in <main>'
+  [1m[36mContact Create (0.1ms)[0m  [1m[32mINSERT INTO "contacts" ("name", "email", "birthdate", "created_at", "updated_at") VALUES (?, ?, ?, ?, ?)[0m  [["name", "Miss Candace Metz"], ["email", "isaac@jacobson.co"], ["birthdate", "1957-12-24"], ["created_at", "2022-07-02 14:28:45.208557"], ["updated_at", "2022-07-02 14:28:45.208557"]]
+  ↳ lib/tasks/dev.rake:6:in `block (3 levels) in <main>'
+  [1m[36mTRANSACTION (2.1ms)[0m  [1m[36mcommit transaction[0m
+  ↳ lib/tasks/dev.rake:6:in `block (3 levels) in <main>'
+  [1m[36mTRANSACTION (0.0ms)[0m  [1m[36mbegin transaction[0m
+  ↳ lib/tasks/dev.rake:6:in `block (3 levels) in <main>'
+  [1m[36mContact Create (0.1ms)[0m  [1m[32mINSERT INTO "contacts" ("name", "email", "birthdate", "created_at", "updated_at") VALUES (?, ?, ?, ?, ?)[0m  [["name", "Neil Rohan DVM"], ["email", "noel_kris@romaguera.io"], ["birthdate", "1972-11-07"], ["created_at", "2022-07-02 14:28:45.213356"], ["updated_at", "2022-07-02 14:28:45.213356"]]
+  ↳ lib/tasks/dev.rake:6:in `block (3 levels) in <main>'
+  [1m[36mTRANSACTION (2.6ms)[0m  [1m[36mcommit transaction[0m
+  ↳ lib/tasks/dev.rake:6:in `block (3 levels) in <main>'
+  [1m[36mTRANSACTION (0.0ms)[0m  [1m[36mbegin transaction[0m
+  ↳ lib/tasks/dev.rake:6:in `block (3 levels) in <main>'
+  [1m[36mContact Create (0.1ms)[0m  [1m[32mINSERT INTO "contacts" ("name", "email", "birthdate", "created_at", "updated_at") VALUES (?, ?, ?, ?, ?)[0m  [["name", "Annita Littel"], ["email", "garry@wisozk.co"], ["birthdate", "1958-12-31"], ["created_at", "2022-07-02 14:28:45.218532"], ["updated_at", "2022-07-02 14:28:45.218532"]]
+  ↳ lib/tasks/dev.rake:6:in `block (3 levels) in <main>'
+  [1m[36mTRANSACTION (7.1ms)[0m  [1m[36mcommit transaction[0m
+  ↳ lib/tasks/dev.rake:6:in `block (3 levels) in <main>'
+  [1m[36mTRANSACTION (0.0ms)[0m  [1m[36mbegin transaction[0m
+  ↳ lib/tasks/dev.rake:6:in `block (3 levels) in <main>'
+  [1m[36mContact Create (0.2ms)[0m  [1m[32mINSERT INTO "contacts" ("name", "email", "birthdate", "created_at", "updated_at") VALUES (?, ?, ?, ?, ?)[0m  [["name", "Mr. Jean Leannon"], ["email", "january.breitenberg@zemlak.info"], ["birthdate", "1959-05-13"], ["created_at", "2022-07-02 14:28:45.228770"], ["updated_at", "2022-07-02 14:28:45.228770"]]
+  ↳ lib/tasks/dev.rake:6:in `block (3 levels) in <main>'
+  [1m[36mTRANSACTION (2.6ms)[0m  [1m[36mcommit transaction[0m
+  ↳ lib/tasks/dev.rake:6:in `block (3 levels) in <main>'
+  [1m[36mTRANSACTION (0.0ms)[0m  [1m[36mbegin transaction[0m
+  ↳ lib/tasks/dev.rake:6:in `block (3 levels) in <main>'
+  [1m[36mContact Create (0.1ms)[0m  [1m[32mINSERT INTO "contacts" ("name", "email", "birthdate", "created_at", "updated_at") VALUES (?, ?, ?, ?, ?)[0m  [["name", "Emerson Mertz"], ["email", "evangeline_green@carroll.info"], ["birthdate", "1970-02-10"], ["created_at", "2022-07-02 14:28:45.234240"], ["updated_at", "2022-07-02 14:28:45.234240"]]
+  ↳ lib/tasks/dev.rake:6:in `block (3 levels) in <main>'
+  [1m[36mTRANSACTION (2.3ms)[0m  [1m[36mcommit transaction[0m
+  ↳ lib/tasks/dev.rake:6:in `block (3 levels) in <main>'
+  [1m[36mTRANSACTION (0.0ms)[0m  [1m[36mbegin transaction[0m
+  ↳ lib/tasks/dev.rake:6:in `block (3 levels) in <main>'
+  [1m[36mContact Create (0.1ms)[0m  [1m[32mINSERT INTO "contacts" ("name", "email", "birthdate", "created_at", "updated_at") VALUES (?, ?, ?, ?, ?)[0m  [["name", "Eugenio Willms"], ["email", "carson.bayer@fahey.io"], ["birthdate", "1980-07-13"], ["created_at", "2022-07-02 14:28:45.239070"], ["updated_at", "2022-07-02 14:28:45.239070"]]
+  ↳ lib/tasks/dev.rake:6:in `block (3 levels) in <main>'
+  [1m[36mTRANSACTION (2.5ms)[0m  [1m[36mcommit transaction[0m
+  ↳ lib/tasks/dev.rake:6:in `block (3 levels) in <main>'
+  [1m[36mTRANSACTION (0.0ms)[0m  [1m[36mbegin transaction[0m
+  ↳ lib/tasks/dev.rake:6:in `block (3 levels) in <main>'
+  [1m[36mContact Create (0.2ms)[0m  [1m[32mINSERT INTO "contacts" ("name", "email", "birthdate", "created_at", "updated_at") VALUES (?, ?, ?, ?, ?)[0m  [["name", "Solange Swaniawski"], ["email", "anthony@runolfsson.name"], ["birthdate", "1968-11-20"], ["created_at", "2022-07-02 14:28:45.244452"], ["updated_at", "2022-07-02 14:28:45.244452"]]
+  ↳ lib/tasks/dev.rake:6:in `block (3 levels) in <main>'
+  [1m[36mTRANSACTION (2.5ms)[0m  [1m[36mcommit transaction[0m
+  ↳ lib/tasks/dev.rake:6:in `block (3 levels) in <main>'
+  [1m[36mTRANSACTION (0.0ms)[0m  [1m[36mbegin transaction[0m
+  ↳ lib/tasks/dev.rake:6:in `block (3 levels) in <main>'
+  [1m[36mContact Create (0.1ms)[0m  [1m[32mINSERT INTO "contacts" ("name", "email", "birthdate", "created_at", "updated_at") VALUES (?, ?, ?, ?, ?)[0m  [["name", "Roman McLaughlin"], ["email", "buddy_bayer@torp-veum.io"], ["birthdate", "1991-11-26"], ["created_at", "2022-07-02 14:28:45.249622"], ["updated_at", "2022-07-02 14:28:45.249622"]]
+  ↳ lib/tasks/dev.rake:6:in `block (3 levels) in <main>'
+  [1m[36mTRANSACTION (2.9ms)[0m  [1m[36mcommit transaction[0m
+  ↳ lib/tasks/dev.rake:6:in `block (3 levels) in <main>'
+  [1m[36mTRANSACTION (0.0ms)[0m  [1m[36mbegin transaction[0m
+  ↳ lib/tasks/dev.rake:6:in `block (3 levels) in <main>'
+  [1m[36mContact Create (0.2ms)[0m  [1m[32mINSERT INTO "contacts" ("name", "email", "birthdate", "created_at", "updated_at") VALUES (?, ?, ?, ?, ?)[0m  [["name", "Zenobia Bartoletti"], ["email", "bart@cassin-muller.com"], ["birthdate", "1961-10-15"], ["created_at", "2022-07-02 14:28:45.255439"], ["updated_at", "2022-07-02 14:28:45.255439"]]
+  ↳ lib/tasks/dev.rake:6:in `block (3 levels) in <main>'
+  [1m[36mTRANSACTION (2.5ms)[0m  [1m[36mcommit transaction[0m
+  ↳ lib/tasks/dev.rake:6:in `block (3 levels) in <main>'
+  [1m[36mTRANSACTION (0.0ms)[0m  [1m[36mbegin transaction[0m
+  ↳ lib/tasks/dev.rake:6:in `block (3 levels) in <main>'
+  [1m[36mContact Create (0.2ms)[0m  [1m[32mINSERT INTO "contacts" ("name", "email", "birthdate", "created_at", "updated_at") VALUES (?, ?, ?, ?, ?)[0m  [["name", "Kory Hickle"], ["email", "ray@becker-funk.co"], ["birthdate", "1973-06-04"], ["created_at", "2022-07-02 14:28:45.260748"], ["updated_at", "2022-07-02 14:28:45.260748"]]
+  ↳ lib/tasks/dev.rake:6:in `block (3 levels) in <main>'
+  [1m[36mTRANSACTION (2.4ms)[0m  [1m[36mcommit transaction[0m
+  ↳ lib/tasks/dev.rake:6:in `block (3 levels) in <main>'
+  [1m[36mTRANSACTION (0.0ms)[0m  [1m[36mbegin transaction[0m
+  ↳ lib/tasks/dev.rake:6:in `block (3 levels) in <main>'
+  [1m[36mContact Create (0.2ms)[0m  [1m[32mINSERT INTO "contacts" ("name", "email", "birthdate", "created_at", "updated_at") VALUES (?, ?, ?, ?, ?)[0m  [["name", "Amb. Vito Goldner"], ["email", "malik@hand.info"], ["birthdate", "1994-11-27"], ["created_at", "2022-07-02 14:28:45.265988"], ["updated_at", "2022-07-02 14:28:45.265988"]]
+  ↳ lib/tasks/dev.rake:6:in `block (3 levels) in <main>'
+  [1m[36mTRANSACTION (2.3ms)[0m  [1m[36mcommit transaction[0m
+  ↳ lib/tasks/dev.rake:6:in `block (3 levels) in <main>'
+  [1m[36mTRANSACTION (0.0ms)[0m  [1m[36mbegin transaction[0m
+  ↳ lib/tasks/dev.rake:6:in `block (3 levels) in <main>'
+  [1m[36mContact Create (0.1ms)[0m  [1m[32mINSERT INTO "contacts" ("name", "email", "birthdate", "created_at", "updated_at") VALUES (?, ?, ?, ?, ?)[0m  [["name", "Amb. Dominique Braun"], ["email", "tasha@bernhard.io"], ["birthdate", "1987-09-14"], ["created_at", "2022-07-02 14:28:45.270972"], ["updated_at", "2022-07-02 14:28:45.270972"]]
+  ↳ lib/tasks/dev.rake:6:in `block (3 levels) in <main>'
+  [1m[36mTRANSACTION (2.5ms)[0m  [1m[36mcommit transaction[0m
+  ↳ lib/tasks/dev.rake:6:in `block (3 levels) in <main>'
+  [1m[36mTRANSACTION (0.0ms)[0m  [1m[36mbegin transaction[0m
+  ↳ lib/tasks/dev.rake:6:in `block (3 levels) in <main>'
+  [1m[36mContact Create (0.2ms)[0m  [1m[32mINSERT INTO "contacts" ("name", "email", "birthdate", "created_at", "updated_at") VALUES (?, ?, ?, ?, ?)[0m  [["name", "Melynda Kovacek"], ["email", "eldridge_jenkins@bogisich-leuschke.name"], ["birthdate", "1985-05-12"], ["created_at", "2022-07-02 14:28:45.276224"], ["updated_at", "2022-07-02 14:28:45.276224"]]
+  ↳ lib/tasks/dev.rake:6:in `block (3 levels) in <main>'
+  [1m[36mTRANSACTION (3.5ms)[0m  [1m[36mcommit transaction[0m
+  ↳ lib/tasks/dev.rake:6:in `block (3 levels) in <main>'
+  [1m[36mTRANSACTION (0.0ms)[0m  [1m[36mbegin transaction[0m
+  ↳ lib/tasks/dev.rake:6:in `block (3 levels) in <main>'
+  [1m[36mContact Create (0.1ms)[0m  [1m[32mINSERT INTO "contacts" ("name", "email", "birthdate", "created_at", "updated_at") VALUES (?, ?, ?, ?, ?)[0m  [["name", "Leoma Ratke"], ["email", "anneliese@labadie.io"], ["birthdate", "1999-03-31"], ["created_at", "2022-07-02 14:28:45.282587"], ["updated_at", "2022-07-02 14:28:45.282587"]]
+  ↳ lib/tasks/dev.rake:6:in `block (3 levels) in <main>'
+  [1m[36mTRANSACTION (2.6ms)[0m  [1m[36mcommit transaction[0m
+  ↳ lib/tasks/dev.rake:6:in `block (3 levels) in <main>'
+  [1m[36mTRANSACTION (0.0ms)[0m  [1m[36mbegin transaction[0m
+  ↳ lib/tasks/dev.rake:6:in `block (3 levels) in <main>'
+  [1m[36mContact Create (0.1ms)[0m  [1m[32mINSERT INTO "contacts" ("name", "email", "birthdate", "created_at", "updated_at") VALUES (?, ?, ?, ?, ?)[0m  [["name", "Donita Lebsack V"], ["email", "isaac_graham@conn.com"], ["birthdate", "1988-12-05"], ["created_at", "2022-07-02 14:28:45.287586"], ["updated_at", "2022-07-02 14:28:45.287586"]]
+  ↳ lib/tasks/dev.rake:6:in `block (3 levels) in <main>'
+  [1m[36mTRANSACTION (2.5ms)[0m  [1m[36mcommit transaction[0m
+  ↳ lib/tasks/dev.rake:6:in `block (3 levels) in <main>'
+  [1m[36mTRANSACTION (0.0ms)[0m  [1m[36mbegin transaction[0m
+  ↳ lib/tasks/dev.rake:6:in `block (3 levels) in <main>'
+  [1m[36mContact Create (0.2ms)[0m  [1m[32mINSERT INTO "contacts" ("name", "email", "birthdate", "created_at", "updated_at") VALUES (?, ?, ?, ?, ?)[0m  [["name", "Christal Leffler Sr."], ["email", "stanton_crist@rippin.io"], ["birthdate", "1991-06-07"], ["created_at", "2022-07-02 14:28:45.293158"], ["updated_at", "2022-07-02 14:28:45.293158"]]
+  ↳ lib/tasks/dev.rake:6:in `block (3 levels) in <main>'
+  [1m[36mTRANSACTION (2.6ms)[0m  [1m[36mcommit transaction[0m
+  ↳ lib/tasks/dev.rake:6:in `block (3 levels) in <main>'
+  [1m[36mTRANSACTION (0.1ms)[0m  [1m[36mbegin transaction[0m
+  ↳ lib/tasks/dev.rake:6:in `block (3 levels) in <main>'
+  [1m[36mContact Create (0.2ms)[0m  [1m[32mINSERT INTO "contacts" ("name", "email", "birthdate", "created_at", "updated_at") VALUES (?, ?, ?, ?, ?)[0m  [["name", "Kyung Nicolas MD"], ["email", "gavin_windler@littel.io"], ["birthdate", "1968-07-27"], ["created_at", "2022-07-02 14:28:45.300363"], ["updated_at", "2022-07-02 14:28:45.300363"]]
+  ↳ lib/tasks/dev.rake:6:in `block (3 levels) in <main>'
+  [1m[36mTRANSACTION (3.0ms)[0m  [1m[36mcommit transaction[0m
+  ↳ lib/tasks/dev.rake:6:in `block (3 levels) in <main>'
+  [1m[36mTRANSACTION (0.0ms)[0m  [1m[36mbegin transaction[0m
+  ↳ lib/tasks/dev.rake:6:in `block (3 levels) in <main>'
+  [1m[36mContact Create (0.2ms)[0m  [1m[32mINSERT INTO "contacts" ("name", "email", "birthdate", "created_at", "updated_at") VALUES (?, ?, ?, ?, ?)[0m  [["name", "Gov. Ceola McCullough"], ["email", "dave@marks.net"], ["birthdate", "1991-08-18"], ["created_at", "2022-07-02 14:28:45.307942"], ["updated_at", "2022-07-02 14:28:45.307942"]]
+  ↳ lib/tasks/dev.rake:6:in `block (3 levels) in <main>'
+  [1m[36mTRANSACTION (2.5ms)[0m  [1m[36mcommit transaction[0m
+  ↳ lib/tasks/dev.rake:6:in `block (3 levels) in <main>'
+  [1m[36mTRANSACTION (0.0ms)[0m  [1m[36mbegin transaction[0m
+  ↳ lib/tasks/dev.rake:6:in `block (3 levels) in <main>'
+  [1m[36mContact Create (0.2ms)[0m  [1m[32mINSERT INTO "contacts" ("name", "email", "birthdate", "created_at", "updated_at") VALUES (?, ?, ?, ?, ?)[0m  [["name", "Marth Huels"], ["email", "dee@roberts.net"], ["birthdate", "1993-10-07"], ["created_at", "2022-07-02 14:28:45.314154"], ["updated_at", "2022-07-02 14:28:45.314154"]]
+  ↳ lib/tasks/dev.rake:6:in `block (3 levels) in <main>'
+  [1m[36mTRANSACTION (2.4ms)[0m  [1m[36mcommit transaction[0m
+  ↳ lib/tasks/dev.rake:6:in `block (3 levels) in <main>'
+  [1m[36mTRANSACTION (0.0ms)[0m  [1m[36mbegin transaction[0m
+  ↳ lib/tasks/dev.rake:6:in `block (3 levels) in <main>'
+  [1m[36mContact Create (0.2ms)[0m  [1m[32mINSERT INTO "contacts" ("name", "email", "birthdate", "created_at", "updated_at") VALUES (?, ?, ?, ?, ?)[0m  [["name", "Kandice Hegmann"], ["email", "yuri@beahan-roberts.net"], ["birthdate", "1956-09-13"], ["created_at", "2022-07-02 14:28:45.319356"], ["updated_at", "2022-07-02 14:28:45.319356"]]
+  ↳ lib/tasks/dev.rake:6:in `block (3 levels) in <main>'
+  [1m[36mTRANSACTION (2.4ms)[0m  [1m[36mcommit transaction[0m
+  ↳ lib/tasks/dev.rake:6:in `block (3 levels) in <main>'
+  [1m[36mTRANSACTION (0.0ms)[0m  [1m[36mbegin transaction[0m
+  ↳ lib/tasks/dev.rake:6:in `block (3 levels) in <main>'
+  [1m[36mContact Create (0.2ms)[0m  [1m[32mINSERT INTO "contacts" ("name", "email", "birthdate", "created_at", "updated_at") VALUES (?, ?, ?, ?, ?)[0m  [["name", "Lonny Hagenes"], ["email", "apryl_quigley@hodkiewicz.info"], ["birthdate", "2000-04-16"], ["created_at", "2022-07-02 14:28:45.324431"], ["updated_at", "2022-07-02 14:28:45.324431"]]
+  ↳ lib/tasks/dev.rake:6:in `block (3 levels) in <main>'
+  [1m[36mTRANSACTION (2.5ms)[0m  [1m[36mcommit transaction[0m
+  ↳ lib/tasks/dev.rake:6:in `block (3 levels) in <main>'
+  [1m[36mTRANSACTION (0.0ms)[0m  [1m[36mbegin transaction[0m
+  ↳ lib/tasks/dev.rake:6:in `block (3 levels) in <main>'
+  [1m[36mContact Create (0.1ms)[0m  [1m[32mINSERT INTO "contacts" ("name", "email", "birthdate", "created_at", "updated_at") VALUES (?, ?, ?, ?, ?)[0m  [["name", "Rep. Eloise Franecki"], ["email", "warren_metz@hilpert-ziemann.biz"], ["birthdate", "1970-03-30"], ["created_at", "2022-07-02 14:28:45.329656"], ["updated_at", "2022-07-02 14:28:45.329656"]]
+  ↳ lib/tasks/dev.rake:6:in `block (3 levels) in <main>'
+  [1m[36mTRANSACTION (3.5ms)[0m  [1m[36mcommit transaction[0m
+  ↳ lib/tasks/dev.rake:6:in `block (3 levels) in <main>'
+  [1m[36mTRANSACTION (0.0ms)[0m  [1m[36mbegin transaction[0m
+  ↳ lib/tasks/dev.rake:6:in `block (3 levels) in <main>'
+  [1m[36mContact Create (0.1ms)[0m  [1m[32mINSERT INTO "contacts" ("name", "email", "birthdate", "created_at", "updated_at") VALUES (?, ?, ?, ?, ?)[0m  [["name", "David Dibbert"], ["email", "russel_morar@sauer.co"], ["birthdate", "1978-12-28"], ["created_at", "2022-07-02 14:28:45.336207"], ["updated_at", "2022-07-02 14:28:45.336207"]]
+  ↳ lib/tasks/dev.rake:6:in `block (3 levels) in <main>'
+  [1m[36mTRANSACTION (2.6ms)[0m  [1m[36mcommit transaction[0m
+  ↳ lib/tasks/dev.rake:6:in `block (3 levels) in <main>'
+  [1m[36mTRANSACTION (0.0ms)[0m  [1m[36mbegin transaction[0m
+  ↳ lib/tasks/dev.rake:6:in `block (3 levels) in <main>'
+  [1m[36mContact Create (0.1ms)[0m  [1m[32mINSERT INTO "contacts" ("name", "email", "birthdate", "created_at", "updated_at") VALUES (?, ?, ?, ?, ?)[0m  [["name", "Boris Funk DO"], ["email", "kindra@feest.co"], ["birthdate", "1982-10-05"], ["created_at", "2022-07-02 14:28:45.341462"], ["updated_at", "2022-07-02 14:28:45.341462"]]
+  ↳ lib/tasks/dev.rake:6:in `block (3 levels) in <main>'
+  [1m[36mTRANSACTION (2.3ms)[0m  [1m[36mcommit transaction[0m
+  ↳ lib/tasks/dev.rake:6:in `block (3 levels) in <main>'
+  [1m[36mTRANSACTION (0.0ms)[0m  [1m[36mbegin transaction[0m
+  ↳ lib/tasks/dev.rake:6:in `block (3 levels) in <main>'
+  [1m[36mContact Create (0.1ms)[0m  [1m[32mINSERT INTO "contacts" ("name", "email", "birthdate", "created_at", "updated_at") VALUES (?, ?, ?, ?, ?)[0m  [["name", "Walton Morissette"], ["email", "jacob@dickinson.io"], ["birthdate", "1977-06-18"], ["created_at", "2022-07-02 14:28:45.346536"], ["updated_at", "2022-07-02 14:28:45.346536"]]
+  ↳ lib/tasks/dev.rake:6:in `block (3 levels) in <main>'
+  [1m[36mTRANSACTION (2.5ms)[0m  [1m[36mcommit transaction[0m
+  ↳ lib/tasks/dev.rake:6:in `block (3 levels) in <main>'
+  [1m[36mTRANSACTION (0.0ms)[0m  [1m[36mbegin transaction[0m
+  ↳ lib/tasks/dev.rake:6:in `block (3 levels) in <main>'
+  [1m[36mContact Create (0.1ms)[0m  [1m[32mINSERT INTO "contacts" ("name", "email", "birthdate", "created_at", "updated_at") VALUES (?, ?, ?, ?, ?)[0m  [["name", "Avery Bartell"], ["email", "chadwick.lowe@schuster.co"], ["birthdate", "1963-03-07"], ["created_at", "2022-07-02 14:28:45.351823"], ["updated_at", "2022-07-02 14:28:45.351823"]]
+  ↳ lib/tasks/dev.rake:6:in `block (3 levels) in <main>'
+  [1m[36mTRANSACTION (3.5ms)[0m  [1m[36mcommit transaction[0m
+  ↳ lib/tasks/dev.rake:6:in `block (3 levels) in <main>'
+  [1m[36mTRANSACTION (0.0ms)[0m  [1m[36mbegin transaction[0m
+  ↳ lib/tasks/dev.rake:6:in `block (3 levels) in <main>'
+  [1m[36mContact Create (0.2ms)[0m  [1m[32mINSERT INTO "contacts" ("name", "email", "birthdate", "created_at", "updated_at") VALUES (?, ?, ?, ?, ?)[0m  [["name", "Maynard Denesik"], ["email", "lisha.lehner@bernier.io"], ["birthdate", "1985-01-09"], ["created_at", "2022-07-02 14:28:45.357829"], ["updated_at", "2022-07-02 14:28:45.357829"]]
+  ↳ lib/tasks/dev.rake:6:in `block (3 levels) in <main>'
+  [1m[36mTRANSACTION (2.5ms)[0m  [1m[36mcommit transaction[0m
+  ↳ lib/tasks/dev.rake:6:in `block (3 levels) in <main>'
+  [1m[36mTRANSACTION (0.0ms)[0m  [1m[36mbegin transaction[0m
+  ↳ lib/tasks/dev.rake:6:in `block (3 levels) in <main>'
+  [1m[36mContact Create (0.1ms)[0m  [1m[32mINSERT INTO "contacts" ("name", "email", "birthdate", "created_at", "updated_at") VALUES (?, ?, ?, ?, ?)[0m  [["name", "Lee Nicolas"], ["email", "solomon@veum.info"], ["birthdate", "1972-04-30"], ["created_at", "2022-07-02 14:28:45.363377"], ["updated_at", "2022-07-02 14:28:45.363377"]]
+  ↳ lib/tasks/dev.rake:6:in `block (3 levels) in <main>'
+  [1m[36mTRANSACTION (2.6ms)[0m  [1m[36mcommit transaction[0m
+  ↳ lib/tasks/dev.rake:6:in `block (3 levels) in <main>'
+  [1m[36mTRANSACTION (0.0ms)[0m  [1m[36mbegin transaction[0m
+  ↳ lib/tasks/dev.rake:6:in `block (3 levels) in <main>'
+  [1m[36mContact Create (0.1ms)[0m  [1m[32mINSERT INTO "contacts" ("name", "email", "birthdate", "created_at", "updated_at") VALUES (?, ?, ?, ?, ?)[0m  [["name", "The Hon. Ji Kautzer"], ["email", "broderick@kemmer-walker.co"], ["birthdate", "1962-11-25"], ["created_at", "2022-07-02 14:28:45.368857"], ["updated_at", "2022-07-02 14:28:45.368857"]]
+  ↳ lib/tasks/dev.rake:6:in `block (3 levels) in <main>'
+  [1m[36mTRANSACTION (2.5ms)[0m  [1m[36mcommit transaction[0m
+  ↳ lib/tasks/dev.rake:6:in `block (3 levels) in <main>'
+  [1m[36mTRANSACTION (0.0ms)[0m  [1m[36mbegin transaction[0m
+  ↳ lib/tasks/dev.rake:6:in `block (3 levels) in <main>'
+  [1m[36mContact Create (0.2ms)[0m  [1m[32mINSERT INTO "contacts" ("name", "email", "birthdate", "created_at", "updated_at") VALUES (?, ?, ?, ?, ?)[0m  [["name", "Gail Pacocha"], ["email", "rhea@abbott.name"], ["birthdate", "1965-05-01"], ["created_at", "2022-07-02 14:28:45.374310"], ["updated_at", "2022-07-02 14:28:45.374310"]]
+  ↳ lib/tasks/dev.rake:6:in `block (3 levels) in <main>'
+  [1m[36mTRANSACTION (2.3ms)[0m  [1m[36mcommit transaction[0m
+  ↳ lib/tasks/dev.rake:6:in `block (3 levels) in <main>'
+  [1m[36mTRANSACTION (0.0ms)[0m  [1m[36mbegin transaction[0m
+  ↳ lib/tasks/dev.rake:6:in `block (3 levels) in <main>'
+  [1m[36mContact Create (0.2ms)[0m  [1m[32mINSERT INTO "contacts" ("name", "email", "birthdate", "created_at", "updated_at") VALUES (?, ?, ?, ?, ?)[0m  [["name", "Kristin Friesen DC"], ["email", "kiyoko@leffler-turner.com"], ["birthdate", "1955-10-19"], ["created_at", "2022-07-02 14:28:45.379898"], ["updated_at", "2022-07-02 14:28:45.379898"]]
+  ↳ lib/tasks/dev.rake:6:in `block (3 levels) in <main>'
+  [1m[36mTRANSACTION (3.1ms)[0m  [1m[36mcommit transaction[0m
+  ↳ lib/tasks/dev.rake:6:in `block (3 levels) in <main>'
+  [1m[36mTRANSACTION (0.0ms)[0m  [1m[36mbegin transaction[0m
+  ↳ lib/tasks/dev.rake:6:in `block (3 levels) in <main>'
+  [1m[36mContact Create (0.1ms)[0m  [1m[32mINSERT INTO "contacts" ("name", "email", "birthdate", "created_at", "updated_at") VALUES (?, ?, ?, ?, ?)[0m  [["name", "Amb. Aiko Jaskolski"], ["email", "efrain@schaden-tromp.org"], ["birthdate", "1977-10-24"], ["created_at", "2022-07-02 14:28:45.385775"], ["updated_at", "2022-07-02 14:28:45.385775"]]
+  ↳ lib/tasks/dev.rake:6:in `block (3 levels) in <main>'
+  [1m[36mTRANSACTION (2.4ms)[0m  [1m[36mcommit transaction[0m
+  ↳ lib/tasks/dev.rake:6:in `block (3 levels) in <main>'
+  [1m[36mTRANSACTION (0.0ms)[0m  [1m[36mbegin transaction[0m
+  ↳ lib/tasks/dev.rake:6:in `block (3 levels) in <main>'
+  [1m[36mContact Create (0.1ms)[0m  [1m[32mINSERT INTO "contacts" ("name", "email", "birthdate", "created_at", "updated_at") VALUES (?, ?, ?, ?, ?)[0m  [["name", "The Hon. Patricia Yundt"], ["email", "arline.okuneva@reilly-kreiger.io"], ["birthdate", "1969-05-30"], ["created_at", "2022-07-02 14:28:45.391225"], ["updated_at", "2022-07-02 14:28:45.391225"]]
+  ↳ lib/tasks/dev.rake:6:in `block (3 levels) in <main>'
+  [1m[36mTRANSACTION (2.3ms)[0m  [1m[36mcommit transaction[0m
+  ↳ lib/tasks/dev.rake:6:in `block (3 levels) in <main>'
+  [1m[36mTRANSACTION (0.0ms)[0m  [1m[36mbegin transaction[0m
+  ↳ lib/tasks/dev.rake:6:in `block (3 levels) in <main>'
+  [1m[36mContact Create (0.2ms)[0m  [1m[32mINSERT INTO "contacts" ("name", "email", "birthdate", "created_at", "updated_at") VALUES (?, ?, ?, ?, ?)[0m  [["name", "Trenton Stroman"], ["email", "marcus_kessler@pfannerstill.co"], ["birthdate", "1987-12-11"], ["created_at", "2022-07-02 14:28:45.396536"], ["updated_at", "2022-07-02 14:28:45.396536"]]
+  ↳ lib/tasks/dev.rake:6:in `block (3 levels) in <main>'
+  [1m[36mTRANSACTION (3.0ms)[0m  [1m[36mcommit transaction[0m
+  ↳ lib/tasks/dev.rake:6:in `block (3 levels) in <main>'
+  [1m[36mTRANSACTION (0.0ms)[0m  [1m[36mbegin transaction[0m
+  ↳ lib/tasks/dev.rake:6:in `block (3 levels) in <main>'
+  [1m[36mContact Create (0.1ms)[0m  [1m[32mINSERT INTO "contacts" ("name", "email", "birthdate", "created_at", "updated_at") VALUES (?, ?, ?, ?, ?)[0m  [["name", "Elroy Walsh Jr."], ["email", "dudley_walker@sipes.io"], ["birthdate", "1980-04-01"], ["created_at", "2022-07-02 14:28:45.402559"], ["updated_at", "2022-07-02 14:28:45.402559"]]
+  ↳ lib/tasks/dev.rake:6:in `block (3 levels) in <main>'
+  [1m[36mTRANSACTION (2.4ms)[0m  [1m[36mcommit transaction[0m
+  ↳ lib/tasks/dev.rake:6:in `block (3 levels) in <main>'
+  [1m[36mTRANSACTION (0.0ms)[0m  [1m[36mbegin transaction[0m
+  ↳ lib/tasks/dev.rake:6:in `block (3 levels) in <main>'
+  [1m[36mContact Create (0.2ms)[0m  [1m[32mINSERT INTO "contacts" ("name", "email", "birthdate", "created_at", "updated_at") VALUES (?, ?, ?, ?, ?)[0m  [["name", "Lionel O'Reilly"], ["email", "anibal_schmeler@wintheiser-greenfelder.io"], ["birthdate", "1986-08-30"], ["created_at", "2022-07-02 14:28:45.407824"], ["updated_at", "2022-07-02 14:28:45.407824"]]
+  ↳ lib/tasks/dev.rake:6:in `block (3 levels) in <main>'
+  [1m[36mTRANSACTION (3.1ms)[0m  [1m[36mcommit transaction[0m
+  ↳ lib/tasks/dev.rake:6:in `block (3 levels) in <main>'
+  [1m[36mTRANSACTION (0.0ms)[0m  [1m[36mbegin transaction[0m
+  ↳ lib/tasks/dev.rake:6:in `block (3 levels) in <main>'
+  [1m[36mContact Create (0.1ms)[0m  [1m[32mINSERT INTO "contacts" ("name", "email", "birthdate", "created_at", "updated_at") VALUES (?, ?, ?, ?, ?)[0m  [["name", "Miss Sharla Mertz"], ["email", "fidel@gislason-mueller.name"], ["birthdate", "1985-04-09"], ["created_at", "2022-07-02 14:28:45.413661"], ["updated_at", "2022-07-02 14:28:45.413661"]]
+  ↳ lib/tasks/dev.rake:6:in `block (3 levels) in <main>'
+  [1m[36mTRANSACTION (2.4ms)[0m  [1m[36mcommit transaction[0m
+  ↳ lib/tasks/dev.rake:6:in `block (3 levels) in <main>'
+  [1m[36mTRANSACTION (0.0ms)[0m  [1m[36mbegin transaction[0m
+  ↳ lib/tasks/dev.rake:6:in `block (3 levels) in <main>'
+  [1m[36mContact Create (0.1ms)[0m  [1m[32mINSERT INTO "contacts" ("name", "email", "birthdate", "created_at", "updated_at") VALUES (?, ?, ?, ?, ?)[0m  [["name", "Rosalyn Jerde"], ["email", "christoper.ruecker@bartell.info"], ["birthdate", "1965-02-11"], ["created_at", "2022-07-02 14:28:45.418840"], ["updated_at", "2022-07-02 14:28:45.418840"]]
+  ↳ lib/tasks/dev.rake:6:in `block (3 levels) in <main>'
+  [1m[36mTRANSACTION (2.2ms)[0m  [1m[36mcommit transaction[0m
+  ↳ lib/tasks/dev.rake:6:in `block (3 levels) in <main>'
+  [1m[36mTRANSACTION (0.0ms)[0m  [1m[36mbegin transaction[0m
+  ↳ lib/tasks/dev.rake:6:in `block (3 levels) in <main>'
+  [1m[36mContact Create (0.1ms)[0m  [1m[32mINSERT INTO "contacts" ("name", "email", "birthdate", "created_at", "updated_at") VALUES (?, ?, ?, ?, ?)[0m  [["name", "Chad O'Keefe"], ["email", "colin.rosenbaum@abshire.com"], ["birthdate", "1962-12-31"], ["created_at", "2022-07-02 14:28:45.423797"], ["updated_at", "2022-07-02 14:28:45.423797"]]
+  ↳ lib/tasks/dev.rake:6:in `block (3 levels) in <main>'
+  [1m[36mTRANSACTION (2.6ms)[0m  [1m[36mcommit transaction[0m
+  ↳ lib/tasks/dev.rake:6:in `block (3 levels) in <main>'
+  [1m[36mTRANSACTION (0.0ms)[0m  [1m[36mbegin transaction[0m
+  ↳ lib/tasks/dev.rake:6:in `block (3 levels) in <main>'
+  [1m[36mContact Create (0.1ms)[0m  [1m[32mINSERT INTO "contacts" ("name", "email", "birthdate", "created_at", "updated_at") VALUES (?, ?, ?, ?, ?)[0m  [["name", "Dr. Elizebeth Howe"], ["email", "kristi_bogan@cummerata-rath.co"], ["birthdate", "1979-05-18"], ["created_at", "2022-07-02 14:28:45.429230"], ["updated_at", "2022-07-02 14:28:45.429230"]]
+  ↳ lib/tasks/dev.rake:6:in `block (3 levels) in <main>'
+  [1m[36mTRANSACTION (2.7ms)[0m  [1m[36mcommit transaction[0m
+  ↳ lib/tasks/dev.rake:6:in `block (3 levels) in <main>'
+  [1m[36mTRANSACTION (0.0ms)[0m  [1m[36mbegin transaction[0m
+  ↳ lib/tasks/dev.rake:6:in `block (3 levels) in <main>'
+  [1m[36mContact Create (0.1ms)[0m  [1m[32mINSERT INTO "contacts" ("name", "email", "birthdate", "created_at", "updated_at") VALUES (?, ?, ?, ?, ?)[0m  [["name", "Willodean Rempel JD"], ["email", "elanor@jacobs-schmeler.info"], ["birthdate", "1958-08-22"], ["created_at", "2022-07-02 14:28:45.434611"], ["updated_at", "2022-07-02 14:28:45.434611"]]
+  ↳ lib/tasks/dev.rake:6:in `block (3 levels) in <main>'
+  [1m[36mTRANSACTION (3.2ms)[0m  [1m[36mcommit transaction[0m
+  ↳ lib/tasks/dev.rake:6:in `block (3 levels) in <main>'
+  [1m[36mTRANSACTION (0.0ms)[0m  [1m[36mbegin transaction[0m
+  ↳ lib/tasks/dev.rake:6:in `block (3 levels) in <main>'
+  [1m[36mContact Create (0.2ms)[0m  [1m[32mINSERT INTO "contacts" ("name", "email", "birthdate", "created_at", "updated_at") VALUES (?, ?, ?, ?, ?)[0m  [["name", "Tyson Koch Sr."], ["email", "margarito@mclaughlin.info"], ["birthdate", "1989-06-11"], ["created_at", "2022-07-02 14:28:45.440864"], ["updated_at", "2022-07-02 14:28:45.440864"]]
+  ↳ lib/tasks/dev.rake:6:in `block (3 levels) in <main>'
+  [1m[36mTRANSACTION (2.4ms)[0m  [1m[36mcommit transaction[0m
+  ↳ lib/tasks/dev.rake:6:in `block (3 levels) in <main>'
+  [1m[36mTRANSACTION (0.0ms)[0m  [1m[36mbegin transaction[0m
+  ↳ lib/tasks/dev.rake:6:in `block (3 levels) in <main>'
+  [1m[36mContact Create (0.1ms)[0m  [1m[32mINSERT INTO "contacts" ("name", "email", "birthdate", "created_at", "updated_at") VALUES (?, ?, ?, ?, ?)[0m  [["name", "Leandra Fritsch"], ["email", "wendell.white@padberg-ortiz.org"], ["birthdate", "1989-08-01"], ["created_at", "2022-07-02 14:28:45.446359"], ["updated_at", "2022-07-02 14:28:45.446359"]]
+  ↳ lib/tasks/dev.rake:6:in `block (3 levels) in <main>'
+  [1m[36mTRANSACTION (2.7ms)[0m  [1m[36mcommit transaction[0m
+  ↳ lib/tasks/dev.rake:6:in `block (3 levels) in <main>'
+  [1m[36mTRANSACTION (0.0ms)[0m  [1m[36mbegin transaction[0m
+  ↳ lib/tasks/dev.rake:6:in `block (3 levels) in <main>'
+  [1m[36mContact Create (0.1ms)[0m  [1m[32mINSERT INTO "contacts" ("name", "email", "birthdate", "created_at", "updated_at") VALUES (?, ?, ?, ?, ?)[0m  [["name", "Barbra Wintheiser III"], ["email", "chas@boyle-volkman.net"], ["birthdate", "1987-03-11"], ["created_at", "2022-07-02 14:28:45.451965"], ["updated_at", "2022-07-02 14:28:45.451965"]]
+  ↳ lib/tasks/dev.rake:6:in `block (3 levels) in <main>'
+  [1m[36mTRANSACTION (2.7ms)[0m  [1m[36mcommit transaction[0m
+  ↳ lib/tasks/dev.rake:6:in `block (3 levels) in <main>'
+  [1m[36mTRANSACTION (0.0ms)[0m  [1m[36mbegin transaction[0m
+  ↳ lib/tasks/dev.rake:6:in `block (3 levels) in <main>'
+  [1m[36mContact Create (0.1ms)[0m  [1m[32mINSERT INTO "contacts" ("name", "email", "birthdate", "created_at", "updated_at") VALUES (?, ?, ?, ?, ?)[0m  [["name", "Emelina Bartell"], ["email", "meaghan_willms@keebler.biz"], ["birthdate", "1951-12-25"], ["created_at", "2022-07-02 14:28:45.457203"], ["updated_at", "2022-07-02 14:28:45.457203"]]
+  ↳ lib/tasks/dev.rake:6:in `block (3 levels) in <main>'
+  [1m[36mTRANSACTION (2.3ms)[0m  [1m[36mcommit transaction[0m
+  ↳ lib/tasks/dev.rake:6:in `block (3 levels) in <main>'
+  [1m[36mTRANSACTION (0.1ms)[0m  [1m[36mbegin transaction[0m
+  ↳ lib/tasks/dev.rake:6:in `block (3 levels) in <main>'
+  [1m[36mContact Create (0.2ms)[0m  [1m[32mINSERT INTO "contacts" ("name", "email", "birthdate", "created_at", "updated_at") VALUES (?, ?, ?, ?, ?)[0m  [["name", "Minerva Kreiger"], ["email", "salvador@steuber.info"], ["birthdate", "1976-12-20"], ["created_at", "2022-07-02 14:28:45.462870"], ["updated_at", "2022-07-02 14:28:45.462870"]]
+  ↳ lib/tasks/dev.rake:6:in `block (3 levels) in <main>'
+  [1m[36mTRANSACTION (2.2ms)[0m  [1m[36mcommit transaction[0m
+  ↳ lib/tasks/dev.rake:6:in `block (3 levels) in <main>'
+  [1m[36mTRANSACTION (0.0ms)[0m  [1m[36mbegin transaction[0m
+  ↳ lib/tasks/dev.rake:6:in `block (3 levels) in <main>'
+  [1m[36mContact Create (0.1ms)[0m  [1m[32mINSERT INTO "contacts" ("name", "email", "birthdate", "created_at", "updated_at") VALUES (?, ?, ?, ?, ?)[0m  [["name", "Eduardo Ferry"], ["email", "reggie_ruecker@fahey-schulist.biz"], ["birthdate", "1974-02-26"], ["created_at", "2022-07-02 14:28:45.468012"], ["updated_at", "2022-07-02 14:28:45.468012"]]
+  ↳ lib/tasks/dev.rake:6:in `block (3 levels) in <main>'
+  [1m[36mTRANSACTION (2.3ms)[0m  [1m[36mcommit transaction[0m
+  ↳ lib/tasks/dev.rake:6:in `block (3 levels) in <main>'
+  [1m[36mTRANSACTION (0.0ms)[0m  [1m[36mbegin transaction[0m
+  ↳ lib/tasks/dev.rake:6:in `block (3 levels) in <main>'
+  [1m[36mContact Create (0.1ms)[0m  [1m[32mINSERT INTO "contacts" ("name", "email", "birthdate", "created_at", "updated_at") VALUES (?, ?, ?, ?, ?)[0m  [["name", "Clayton Wuckert"], ["email", "shenika@thompson-shields.org"], ["birthdate", "1955-01-03"], ["created_at", "2022-07-02 14:28:45.472748"], ["updated_at", "2022-07-02 14:28:45.472748"]]
+  ↳ lib/tasks/dev.rake:6:in `block (3 levels) in <main>'
+  [1m[36mTRANSACTION (2.2ms)[0m  [1m[36mcommit transaction[0m
+  ↳ lib/tasks/dev.rake:6:in `block (3 levels) in <main>'
+  [1m[36mTRANSACTION (0.0ms)[0m  [1m[36mbegin transaction[0m
+  ↳ lib/tasks/dev.rake:6:in `block (3 levels) in <main>'
+  [1m[36mContact Create (0.1ms)[0m  [1m[32mINSERT INTO "contacts" ("name", "email", "birthdate", "created_at", "updated_at") VALUES (?, ?, ?, ?, ?)[0m  [["name", "Ms. Courtney Schowalter"], ["email", "lucilla_wintheiser@turcotte.info"], ["birthdate", "1958-08-28"], ["created_at", "2022-07-02 14:28:45.477366"], ["updated_at", "2022-07-02 14:28:45.477366"]]
+  ↳ lib/tasks/dev.rake:6:in `block (3 levels) in <main>'
+  [1m[36mTRANSACTION (2.1ms)[0m  [1m[36mcommit transaction[0m
+  ↳ lib/tasks/dev.rake:6:in `block (3 levels) in <main>'
+  [1m[36mTRANSACTION (0.0ms)[0m  [1m[36mbegin transaction[0m
+  ↳ lib/tasks/dev.rake:6:in `block (3 levels) in <main>'
+  [1m[36mContact Create (0.1ms)[0m  [1m[32mINSERT INTO "contacts" ("name", "email", "birthdate", "created_at", "updated_at") VALUES (?, ?, ?, ?, ?)[0m  [["name", "Rex Tromp"], ["email", "ronnie@west.name"], ["birthdate", "1957-08-22"], ["created_at", "2022-07-02 14:28:45.481697"], ["updated_at", "2022-07-02 14:28:45.481697"]]
+  ↳ lib/tasks/dev.rake:6:in `block (3 levels) in <main>'
+  [1m[36mTRANSACTION (2.2ms)[0m  [1m[36mcommit transaction[0m
+  ↳ lib/tasks/dev.rake:6:in `block (3 levels) in <main>'
+  [1m[36mTRANSACTION (0.0ms)[0m  [1m[36mbegin transaction[0m
+  ↳ lib/tasks/dev.rake:6:in `block (3 levels) in <main>'
+  [1m[36mContact Create (0.1ms)[0m  [1m[32mINSERT INTO "contacts" ("name", "email", "birthdate", "created_at", "updated_at") VALUES (?, ?, ?, ?, ?)[0m  [["name", "Dawne Walter V"], ["email", "caterina@von.com"], ["birthdate", "1995-11-25"], ["created_at", "2022-07-02 14:28:45.486126"], ["updated_at", "2022-07-02 14:28:45.486126"]]
+  ↳ lib/tasks/dev.rake:6:in `block (3 levels) in <main>'
+  [1m[36mTRANSACTION (2.1ms)[0m  [1m[36mcommit transaction[0m
+  ↳ lib/tasks/dev.rake:6:in `block (3 levels) in <main>'
+  [1m[36mTRANSACTION (0.0ms)[0m  [1m[36mbegin transaction[0m
+  ↳ lib/tasks/dev.rake:6:in `block (3 levels) in <main>'
+  [1m[36mContact Create (0.1ms)[0m  [1m[32mINSERT INTO "contacts" ("name", "email", "birthdate", "created_at", "updated_at") VALUES (?, ?, ?, ?, ?)[0m  [["name", "Glen Wyman"], ["email", "branden_mohr@ferry-simonis.biz"], ["birthdate", "1983-07-22"], ["created_at", "2022-07-02 14:28:45.490432"], ["updated_at", "2022-07-02 14:28:45.490432"]]
+  ↳ lib/tasks/dev.rake:6:in `block (3 levels) in <main>'
+  [1m[36mTRANSACTION (2.1ms)[0m  [1m[36mcommit transaction[0m
+  ↳ lib/tasks/dev.rake:6:in `block (3 levels) in <main>'
+  [1m[36mTRANSACTION (0.0ms)[0m  [1m[36mbegin transaction[0m
+  ↳ lib/tasks/dev.rake:6:in `block (3 levels) in <main>'
+  [1m[36mContact Create (0.1ms)[0m  [1m[32mINSERT INTO "contacts" ("name", "email", "birthdate", "created_at", "updated_at") VALUES (?, ?, ?, ?, ?)[0m  [["name", "Prudence Moore"], ["email", "marvel@bartoletti.info"], ["birthdate", "1966-08-09"], ["created_at", "2022-07-02 14:28:45.494770"], ["updated_at", "2022-07-02 14:28:45.494770"]]
+  ↳ lib/tasks/dev.rake:6:in `block (3 levels) in <main>'
+  [1m[36mTRANSACTION (2.4ms)[0m  [1m[36mcommit transaction[0m
+  ↳ lib/tasks/dev.rake:6:in `block (3 levels) in <main>'
+  [1m[36mTRANSACTION (0.0ms)[0m  [1m[36mbegin transaction[0m
+  ↳ lib/tasks/dev.rake:6:in `block (3 levels) in <main>'
+  [1m[36mContact Create (0.1ms)[0m  [1m[32mINSERT INTO "contacts" ("name", "email", "birthdate", "created_at", "updated_at") VALUES (?, ?, ?, ?, ?)[0m  [["name", "Hailey Langworth II"], ["email", "marcela_wolff@schaefer.biz"], ["birthdate", "1969-04-19"], ["created_at", "2022-07-02 14:28:45.499444"], ["updated_at", "2022-07-02 14:28:45.499444"]]
+  ↳ lib/tasks/dev.rake:6:in `block (3 levels) in <main>'
+  [1m[36mTRANSACTION (2.4ms)[0m  [1m[36mcommit transaction[0m
+  ↳ lib/tasks/dev.rake:6:in `block (3 levels) in <main>'
+  [1m[36mTRANSACTION (0.0ms)[0m  [1m[36mbegin transaction[0m
+  ↳ lib/tasks/dev.rake:6:in `block (3 levels) in <main>'
+  [1m[36mContact Create (0.1ms)[0m  [1m[32mINSERT INTO "contacts" ("name", "email", "birthdate", "created_at", "updated_at") VALUES (?, ?, ?, ?, ?)[0m  [["name", "Jeannine Raynor"], ["email", "augustina@grady-glover.co"], ["birthdate", "1995-08-04"], ["created_at", "2022-07-02 14:28:45.504071"], ["updated_at", "2022-07-02 14:28:45.504071"]]
+  ↳ lib/tasks/dev.rake:6:in `block (3 levels) in <main>'
+  [1m[36mTRANSACTION (2.2ms)[0m  [1m[36mcommit transaction[0m
+  ↳ lib/tasks/dev.rake:6:in `block (3 levels) in <main>'
+  [1m[36mTRANSACTION (0.0ms)[0m  [1m[36mbegin transaction[0m
+  ↳ lib/tasks/dev.rake:6:in `block (3 levels) in <main>'
+  [1m[36mContact Create (0.2ms)[0m  [1m[32mINSERT INTO "contacts" ("name", "email", "birthdate", "created_at", "updated_at") VALUES (?, ?, ?, ?, ?)[0m  [["name", "James Botsford"], ["email", "judi_stracke@littel-nienow.com"], ["birthdate", "1993-11-11"], ["created_at", "2022-07-02 14:28:45.508554"], ["updated_at", "2022-07-02 14:28:45.508554"]]
+  ↳ lib/tasks/dev.rake:6:in `block (3 levels) in <main>'
+  [1m[36mTRANSACTION (2.3ms)[0m  [1m[36mcommit transaction[0m
+  ↳ lib/tasks/dev.rake:6:in `block (3 levels) in <main>'
+  [1m[36mTRANSACTION (0.0ms)[0m  [1m[36mbegin transaction[0m
+  ↳ lib/tasks/dev.rake:6:in `block (3 levels) in <main>'
+  [1m[36mContact Create (0.2ms)[0m  [1m[32mINSERT INTO "contacts" ("name", "email", "birthdate", "created_at", "updated_at") VALUES (?, ?, ?, ?, ?)[0m  [["name", "Fletcher McKenzie IV"], ["email", "vivan@volkman.co"], ["birthdate", "1972-05-29"], ["created_at", "2022-07-02 14:28:45.513328"], ["updated_at", "2022-07-02 14:28:45.513328"]]
+  ↳ lib/tasks/dev.rake:6:in `block (3 levels) in <main>'
+  [1m[36mTRANSACTION (2.4ms)[0m  [1m[36mcommit transaction[0m
+  ↳ lib/tasks/dev.rake:6:in `block (3 levels) in <main>'
+  [1m[36mTRANSACTION (0.0ms)[0m  [1m[36mbegin transaction[0m
+  ↳ lib/tasks/dev.rake:6:in `block (3 levels) in <main>'
+  [1m[36mContact Create (0.1ms)[0m  [1m[32mINSERT INTO "contacts" ("name", "email", "birthdate", "created_at", "updated_at") VALUES (?, ?, ?, ?, ?)[0m  [["name", "Reba Schiller"], ["email", "glenn@sanford-gleichner.io"], ["birthdate", "1964-10-01"], ["created_at", "2022-07-02 14:28:45.526381"], ["updated_at", "2022-07-02 14:28:45.526381"]]
+  ↳ lib/tasks/dev.rake:6:in `block (3 levels) in <main>'
+  [1m[36mTRANSACTION (2.7ms)[0m  [1m[36mcommit transaction[0m
+  ↳ lib/tasks/dev.rake:6:in `block (3 levels) in <main>'
+  [1m[36mTRANSACTION (0.0ms)[0m  [1m[36mbegin transaction[0m
+  ↳ lib/tasks/dev.rake:6:in `block (3 levels) in <main>'
+  [1m[36mContact Create (0.1ms)[0m  [1m[32mINSERT INTO "contacts" ("name", "email", "birthdate", "created_at", "updated_at") VALUES (?, ?, ?, ?, ?)[0m  [["name", "Nelson Emmerich"], ["email", "roxanna@ortiz.com"], ["birthdate", "1953-02-09"], ["created_at", "2022-07-02 14:28:45.532014"], ["updated_at", "2022-07-02 14:28:45.532014"]]
+  ↳ lib/tasks/dev.rake:6:in `block (3 levels) in <main>'
+  [1m[36mTRANSACTION (2.9ms)[0m  [1m[36mcommit transaction[0m
+  ↳ lib/tasks/dev.rake:6:in `block (3 levels) in <main>'
+  [1m[36mTRANSACTION (0.0ms)[0m  [1m[36mbegin transaction[0m
+  ↳ lib/tasks/dev.rake:6:in `block (3 levels) in <main>'
+  [1m[36mContact Create (0.1ms)[0m  [1m[32mINSERT INTO "contacts" ("name", "email", "birthdate", "created_at", "updated_at") VALUES (?, ?, ?, ?, ?)[0m  [["name", "Prof. Jewell White"], ["email", "alvin_hodkiewicz@littel-jaskolski.info"], ["birthdate", "1977-02-13"], ["created_at", "2022-07-02 14:28:45.537694"], ["updated_at", "2022-07-02 14:28:45.537694"]]
+  ↳ lib/tasks/dev.rake:6:in `block (3 levels) in <main>'
+  [1m[36mTRANSACTION (2.5ms)[0m  [1m[36mcommit transaction[0m
+  ↳ lib/tasks/dev.rake:6:in `block (3 levels) in <main>'
+  [1m[36mTRANSACTION (0.0ms)[0m  [1m[36mbegin transaction[0m
+  ↳ lib/tasks/dev.rake:6:in `block (3 levels) in <main>'
+  [1m[36mContact Create (0.3ms)[0m  [1m[32mINSERT INTO "contacts" ("name", "email", "birthdate", "created_at", "updated_at") VALUES (?, ?, ?, ?, ?)[0m  [["name", "Marth Wilkinson"], ["email", "athena_gerlach@bins.co"], ["birthdate", "1982-12-15"], ["created_at", "2022-07-02 14:28:45.543159"], ["updated_at", "2022-07-02 14:28:45.543159"]]
+  ↳ lib/tasks/dev.rake:6:in `block (3 levels) in <main>'
+  [1m[36mTRANSACTION (3.1ms)[0m  [1m[36mcommit transaction[0m
+  ↳ lib/tasks/dev.rake:6:in `block (3 levels) in <main>'
+  [1m[36mTRANSACTION (0.0ms)[0m  [1m[36mbegin transaction[0m
+  ↳ lib/tasks/dev.rake:6:in `block (3 levels) in <main>'
+  [1m[36mContact Create (0.1ms)[0m  [1m[32mINSERT INTO "contacts" ("name", "email", "birthdate", "created_at", "updated_at") VALUES (?, ?, ?, ?, ?)[0m  [["name", "Latashia Dach"], ["email", "arica@schmidt-smith.com"], ["birthdate", "1986-07-12"], ["created_at", "2022-07-02 14:28:45.549263"], ["updated_at", "2022-07-02 14:28:45.549263"]]
+  ↳ lib/tasks/dev.rake:6:in `block (3 levels) in <main>'
+  [1m[36mTRANSACTION (3.3ms)[0m  [1m[36mcommit transaction[0m
+  ↳ lib/tasks/dev.rake:6:in `block (3 levels) in <main>'
+  [1m[36mTRANSACTION (0.0ms)[0m  [1m[36mbegin transaction[0m
+  ↳ lib/tasks/dev.rake:6:in `block (3 levels) in <main>'
+  [1m[36mContact Create (0.2ms)[0m  [1m[32mINSERT INTO "contacts" ("name", "email", "birthdate", "created_at", "updated_at") VALUES (?, ?, ?, ?, ?)[0m  [["name", "Logan Gibson"], ["email", "blake_torp@schmidt-hoeger.name"], ["birthdate", "1968-11-27"], ["created_at", "2022-07-02 14:28:45.555474"], ["updated_at", "2022-07-02 14:28:45.555474"]]
+  ↳ lib/tasks/dev.rake:6:in `block (3 levels) in <main>'
+  [1m[36mTRANSACTION (2.6ms)[0m  [1m[36mcommit transaction[0m
+  ↳ lib/tasks/dev.rake:6:in `block (3 levels) in <main>'
+  [1m[36mTRANSACTION (0.0ms)[0m  [1m[36mbegin transaction[0m
+  ↳ lib/tasks/dev.rake:6:in `block (3 levels) in <main>'
+  [1m[36mContact Create (0.2ms)[0m  [1m[32mINSERT INTO "contacts" ("name", "email", "birthdate", "created_at", "updated_at") VALUES (?, ?, ?, ?, ?)[0m  [["name", "Althea Casper"], ["email", "mckinley@carter.org"], ["birthdate", "1990-04-17"], ["created_at", "2022-07-02 14:28:45.560972"], ["updated_at", "2022-07-02 14:28:45.560972"]]
+  ↳ lib/tasks/dev.rake:6:in `block (3 levels) in <main>'
+  [1m[36mTRANSACTION (2.8ms)[0m  [1m[36mcommit transaction[0m
+  ↳ lib/tasks/dev.rake:6:in `block (3 levels) in <main>'
+  [1m[36mTRANSACTION (0.0ms)[0m  [1m[36mbegin transaction[0m
+  ↳ lib/tasks/dev.rake:6:in `block (3 levels) in <main>'
+  [1m[36mContact Create (0.1ms)[0m  [1m[32mINSERT INTO "contacts" ("name", "email", "birthdate", "created_at", "updated_at") VALUES (?, ?, ?, ?, ?)[0m  [["name", "Derick Ondricka"], ["email", "ahmed@runte.co"], ["birthdate", "1995-08-30"], ["created_at", "2022-07-02 14:28:45.566888"], ["updated_at", "2022-07-02 14:28:45.566888"]]
+  ↳ lib/tasks/dev.rake:6:in `block (3 levels) in <main>'
+  [1m[36mTRANSACTION (2.3ms)[0m  [1m[36mcommit transaction[0m
+  ↳ lib/tasks/dev.rake:6:in `block (3 levels) in <main>'
+  [1m[36mTRANSACTION (0.0ms)[0m  [1m[36mbegin transaction[0m
+  ↳ lib/tasks/dev.rake:6:in `block (3 levels) in <main>'
+  [1m[36mContact Create (0.2ms)[0m  [1m[32mINSERT INTO "contacts" ("name", "email", "birthdate", "created_at", "updated_at") VALUES (?, ?, ?, ?, ?)[0m  [["name", "Coralee Purdy Jr."], ["email", "carolyne_wintheiser@huel.co"], ["birthdate", "1977-11-30"], ["created_at", "2022-07-02 14:28:45.572377"], ["updated_at", "2022-07-02 14:28:45.572377"]]
+  ↳ lib/tasks/dev.rake:6:in `block (3 levels) in <main>'
+  [1m[36mTRANSACTION (2.5ms)[0m  [1m[36mcommit transaction[0m
+  ↳ lib/tasks/dev.rake:6:in `block (3 levels) in <main>'
+  [1m[36mTRANSACTION (0.1ms)[0m  [1m[36mbegin transaction[0m
+  ↳ lib/tasks/dev.rake:6:in `block (3 levels) in <main>'
+  [1m[36mContact Create (0.3ms)[0m  [1m[32mINSERT INTO "contacts" ("name", "email", "birthdate", "created_at", "updated_at") VALUES (?, ?, ?, ?, ?)[0m  [["name", "Mrs. Leida Abshire"], ["email", "darell_lubowitz@schmidt-king.net"], ["birthdate", "1972-07-11"], ["created_at", "2022-07-02 14:28:45.579206"], ["updated_at", "2022-07-02 14:28:45.579206"]]
+  ↳ lib/tasks/dev.rake:6:in `block (3 levels) in <main>'
+  [1m[36mTRANSACTION (3.1ms)[0m  [1m[36mcommit transaction[0m
+  ↳ lib/tasks/dev.rake:6:in `block (3 levels) in <main>'
+  [1m[36mTRANSACTION (0.1ms)[0m  [1m[36mbegin transaction[0m
+  ↳ lib/tasks/dev.rake:6:in `block (3 levels) in <main>'
+  [1m[36mContact Create (0.2ms)[0m  [1m[32mINSERT INTO "contacts" ("name", "email", "birthdate", "created_at", "updated_at") VALUES (?, ?, ?, ?, ?)[0m  [["name", "Jon Fadel"], ["email", "waylon@lebsack-braun.biz"], ["birthdate", "1991-08-02"], ["created_at", "2022-07-02 14:28:45.587179"], ["updated_at", "2022-07-02 14:28:45.587179"]]
+  ↳ lib/tasks/dev.rake:6:in `block (3 levels) in <main>'
+  [1m[36mTRANSACTION (2.3ms)[0m  [1m[36mcommit transaction[0m
+  ↳ lib/tasks/dev.rake:6:in `block (3 levels) in <main>'
+  [1m[36mTRANSACTION (0.0ms)[0m  [1m[36mbegin transaction[0m
+  ↳ lib/tasks/dev.rake:6:in `block (3 levels) in <main>'
+  [1m[36mContact Create (0.2ms)[0m  [1m[32mINSERT INTO "contacts" ("name", "email", "birthdate", "created_at", "updated_at") VALUES (?, ?, ?, ?, ?)[0m  [["name", "Danae Hahn"], ["email", "noble@anderson.net"], ["birthdate", "1966-12-14"], ["created_at", "2022-07-02 14:28:45.593499"], ["updated_at", "2022-07-02 14:28:45.593499"]]
+  ↳ lib/tasks/dev.rake:6:in `block (3 levels) in <main>'
+  [1m[36mTRANSACTION (2.4ms)[0m  [1m[36mcommit transaction[0m
+  ↳ lib/tasks/dev.rake:6:in `block (3 levels) in <main>'
+  [1m[36mTRANSACTION (0.0ms)[0m  [1m[36mbegin transaction[0m
+  ↳ lib/tasks/dev.rake:6:in `block (3 levels) in <main>'
+  [1m[36mContact Create (0.2ms)[0m  [1m[32mINSERT INTO "contacts" ("name", "email", "birthdate", "created_at", "updated_at") VALUES (?, ?, ?, ?, ?)[0m  [["name", "Brande Nikolaus"], ["email", "lashaunda@walker.name"], ["birthdate", "1977-07-28"], ["created_at", "2022-07-02 14:28:45.599095"], ["updated_at", "2022-07-02 14:28:45.599095"]]
+  ↳ lib/tasks/dev.rake:6:in `block (3 levels) in <main>'
+  [1m[36mTRANSACTION (2.4ms)[0m  [1m[36mcommit transaction[0m
+  ↳ lib/tasks/dev.rake:6:in `block (3 levels) in <main>'
+  [1m[36mTRANSACTION (0.0ms)[0m  [1m[36mbegin transaction[0m
+  ↳ lib/tasks/dev.rake:6:in `block (3 levels) in <main>'
+  [1m[36mContact Create (0.1ms)[0m  [1m[32mINSERT INTO "contacts" ("name", "email", "birthdate", "created_at", "updated_at") VALUES (?, ?, ?, ?, ?)[0m  [["name", "Margareta Rowe"], ["email", "ken.oberbrunner@marquardt.net"], ["birthdate", "1998-08-03"], ["created_at", "2022-07-02 14:28:45.604307"], ["updated_at", "2022-07-02 14:28:45.604307"]]
+  ↳ lib/tasks/dev.rake:6:in `block (3 levels) in <main>'
+  [1m[36mTRANSACTION (2.3ms)[0m  [1m[36mcommit transaction[0m
+  ↳ lib/tasks/dev.rake:6:in `block (3 levels) in <main>'
+  [1m[36mTRANSACTION (0.0ms)[0m  [1m[36mbegin transaction[0m
+  ↳ lib/tasks/dev.rake:6:in `block (3 levels) in <main>'
+  [1m[36mContact Create (0.2ms)[0m  [1m[32mINSERT INTO "contacts" ("name", "email", "birthdate", "created_at", "updated_at") VALUES (?, ?, ?, ?, ?)[0m  [["name", "Candis Dooley"], ["email", "eleni@rogahn-kuhn.org"], ["birthdate", "1959-02-11"], ["created_at", "2022-07-02 14:28:45.609115"], ["updated_at", "2022-07-02 14:28:45.609115"]]
+  ↳ lib/tasks/dev.rake:6:in `block (3 levels) in <main>'
+  [1m[36mTRANSACTION (3.1ms)[0m  [1m[36mcommit transaction[0m
+  ↳ lib/tasks/dev.rake:6:in `block (3 levels) in <main>'
+  [1m[36mTRANSACTION (0.0ms)[0m  [1m[36mbegin transaction[0m
+  ↳ lib/tasks/dev.rake:6:in `block (3 levels) in <main>'
+  [1m[36mContact Create (0.1ms)[0m  [1m[32mINSERT INTO "contacts" ("name", "email", "birthdate", "created_at", "updated_at") VALUES (?, ?, ?, ?, ?)[0m  [["name", "Tabatha Pouros"], ["email", "charlie.volkman@olson-harber.name"], ["birthdate", "1968-09-18"], ["created_at", "2022-07-02 14:28:45.615115"], ["updated_at", "2022-07-02 14:28:45.615115"]]
+  ↳ lib/tasks/dev.rake:6:in `block (3 levels) in <main>'
+  [1m[36mTRANSACTION (2.4ms)[0m  [1m[36mcommit transaction[0m
+  ↳ lib/tasks/dev.rake:6:in `block (3 levels) in <main>'
+  [1m[36mTRANSACTION (0.0ms)[0m  [1m[36mbegin transaction[0m
+  ↳ lib/tasks/dev.rake:6:in `block (3 levels) in <main>'
+  [1m[36mContact Create (0.1ms)[0m  [1m[32mINSERT INTO "contacts" ("name", "email", "birthdate", "created_at", "updated_at") VALUES (?, ?, ?, ?, ?)[0m  [["name", "Rep. Lakendra Kutch"], ["email", "shellie_gulgowski@klein.biz"], ["birthdate", "1959-12-14"], ["created_at", "2022-07-02 14:28:45.620325"], ["updated_at", "2022-07-02 14:28:45.620325"]]
+  ↳ lib/tasks/dev.rake:6:in `block (3 levels) in <main>'
+  [1m[36mTRANSACTION (2.7ms)[0m  [1m[36mcommit transaction[0m
+  ↳ lib/tasks/dev.rake:6:in `block (3 levels) in <main>'
+  [1m[36mTRANSACTION (0.0ms)[0m  [1m[36mbegin transaction[0m
+  ↳ lib/tasks/dev.rake:6:in `block (3 levels) in <main>'
+  [1m[36mContact Create (0.2ms)[0m  [1m[32mINSERT INTO "contacts" ("name", "email", "birthdate", "created_at", "updated_at") VALUES (?, ?, ?, ?, ?)[0m  [["name", "Jacques Torp"], ["email", "jerald.ortiz@crooks.name"], ["birthdate", "1997-09-09"], ["created_at", "2022-07-02 14:28:45.625761"], ["updated_at", "2022-07-02 14:28:45.625761"]]
+  ↳ lib/tasks/dev.rake:6:in `block (3 levels) in <main>'
+  [1m[36mTRANSACTION (2.4ms)[0m  [1m[36mcommit transaction[0m
+  ↳ lib/tasks/dev.rake:6:in `block (3 levels) in <main>'
+  [1m[36mTRANSACTION (0.0ms)[0m  [1m[36mbegin transaction[0m
+  ↳ lib/tasks/dev.rake:6:in `block (3 levels) in <main>'
+  [1m[36mContact Create (0.2ms)[0m  [1m[32mINSERT INTO "contacts" ("name", "email", "birthdate", "created_at", "updated_at") VALUES (?, ?, ?, ?, ?)[0m  [["name", "Lindsay Johns Sr."], ["email", "sylvester.stiedemann@reichel.org"], ["birthdate", "1981-05-30"], ["created_at", "2022-07-02 14:28:45.631139"], ["updated_at", "2022-07-02 14:28:45.631139"]]
+  ↳ lib/tasks/dev.rake:6:in `block (3 levels) in <main>'
+  [1m[36mTRANSACTION (2.2ms)[0m  [1m[36mcommit transaction[0m
+  ↳ lib/tasks/dev.rake:6:in `block (3 levels) in <main>'
+  [1m[36mTRANSACTION (0.0ms)[0m  [1m[36mbegin transaction[0m
+  ↳ lib/tasks/dev.rake:6:in `block (3 levels) in <main>'
+  [1m[36mContact Create (0.1ms)[0m  [1m[32mINSERT INTO "contacts" ("name", "email", "birthdate", "created_at", "updated_at") VALUES (?, ?, ?, ?, ?)[0m  [["name", "Otelia Wyman"], ["email", "marco@ullrich.io"], ["birthdate", "1977-12-25"], ["created_at", "2022-07-02 14:28:45.635949"], ["updated_at", "2022-07-02 14:28:45.635949"]]
+  ↳ lib/tasks/dev.rake:6:in `block (3 levels) in <main>'
+  [1m[36mTRANSACTION (2.3ms)[0m  [1m[36mcommit transaction[0m
+  ↳ lib/tasks/dev.rake:6:in `block (3 levels) in <main>'
+  [1m[36mTRANSACTION (0.0ms)[0m  [1m[36mbegin transaction[0m
+  ↳ lib/tasks/dev.rake:6:in `block (3 levels) in <main>'
+  [1m[36mContact Create (0.1ms)[0m  [1m[32mINSERT INTO "contacts" ("name", "email", "birthdate", "created_at", "updated_at") VALUES (?, ?, ?, ?, ?)[0m  [["name", "Mrs. Scott Willms"], ["email", "emanuel_becker@barrows-douglas.org"], ["birthdate", "1957-02-21"], ["created_at", "2022-07-02 14:28:45.640688"], ["updated_at", "2022-07-02 14:28:45.640688"]]
+  ↳ lib/tasks/dev.rake:6:in `block (3 levels) in <main>'
+  [1m[36mTRANSACTION (2.3ms)[0m  [1m[36mcommit transaction[0m
+  ↳ lib/tasks/dev.rake:6:in `block (3 levels) in <main>'
+  [1m[36mTRANSACTION (0.0ms)[0m  [1m[36mbegin transaction[0m
+  ↳ lib/tasks/dev.rake:6:in `block (3 levels) in <main>'
+  [1m[36mContact Create (0.1ms)[0m  [1m[32mINSERT INTO "contacts" ("name", "email", "birthdate", "created_at", "updated_at") VALUES (?, ?, ?, ?, ?)[0m  [["name", "Tammy Wiza VM"], ["email", "enrique@langosh.info"], ["birthdate", "1961-04-18"], ["created_at", "2022-07-02 14:28:45.645432"], ["updated_at", "2022-07-02 14:28:45.645432"]]
+  ↳ lib/tasks/dev.rake:6:in `block (3 levels) in <main>'
+  [1m[36mTRANSACTION (2.2ms)[0m  [1m[36mcommit transaction[0m
+  ↳ lib/tasks/dev.rake:6:in `block (3 levels) in <main>'
+  [1m[36mTRANSACTION (0.0ms)[0m  [1m[36mbegin transaction[0m
+  ↳ lib/tasks/dev.rake:6:in `block (3 levels) in <main>'
+  [1m[36mContact Create (0.2ms)[0m  [1m[32mINSERT INTO "contacts" ("name", "email", "birthdate", "created_at", "updated_at") VALUES (?, ?, ?, ?, ?)[0m  [["name", "Donny Kshlerin"], ["email", "haley_nader@koelpin.co"], ["birthdate", "1955-01-28"], ["created_at", "2022-07-02 14:28:45.650042"], ["updated_at", "2022-07-02 14:28:45.650042"]]
+  ↳ lib/tasks/dev.rake:6:in `block (3 levels) in <main>'
+  [1m[36mTRANSACTION (2.1ms)[0m  [1m[36mcommit transaction[0m
+  ↳ lib/tasks/dev.rake:6:in `block (3 levels) in <main>'
+  [1m[36mTRANSACTION (0.0ms)[0m  [1m[36mbegin transaction[0m
+  ↳ lib/tasks/dev.rake:6:in `block (3 levels) in <main>'
+  [1m[36mContact Create (0.1ms)[0m  [1m[32mINSERT INTO "contacts" ("name", "email", "birthdate", "created_at", "updated_at") VALUES (?, ?, ?, ?, ?)[0m  [["name", "Gaynell Schaden"], ["email", "helena@orn-kessler.info"], ["birthdate", "1979-07-12"], ["created_at", "2022-07-02 14:28:45.654362"], ["updated_at", "2022-07-02 14:28:45.654362"]]
+  ↳ lib/tasks/dev.rake:6:in `block (3 levels) in <main>'
+  [1m[36mTRANSACTION (2.3ms)[0m  [1m[36mcommit transaction[0m
+  ↳ lib/tasks/dev.rake:6:in `block (3 levels) in <main>'
+  [1m[36mTRANSACTION (0.0ms)[0m  [1m[36mbegin transaction[0m
+  ↳ lib/tasks/dev.rake:6:in `block (3 levels) in <main>'
+  [1m[36mContact Create (0.1ms)[0m  [1m[32mINSERT INTO "contacts" ("name", "email", "birthdate", "created_at", "updated_at") VALUES (?, ?, ?, ?, ?)[0m  [["name", "Kam Glover"], ["email", "sherman@reinger.com"], ["birthdate", "1973-11-07"], ["created_at", "2022-07-02 14:28:45.658904"], ["updated_at", "2022-07-02 14:28:45.658904"]]
+  ↳ lib/tasks/dev.rake:6:in `block (3 levels) in <main>'
+  [1m[36mTRANSACTION (2.3ms)[0m  [1m[36mcommit transaction[0m
+  ↳ lib/tasks/dev.rake:6:in `block (3 levels) in <main>'
+  [1m[36mTRANSACTION (0.0ms)[0m  [1m[36mbegin transaction[0m
+  ↳ lib/tasks/dev.rake:6:in `block (3 levels) in <main>'
+  [1m[36mContact Create (0.1ms)[0m  [1m[32mINSERT INTO "contacts" ("name", "email", "birthdate", "created_at", "updated_at") VALUES (?, ?, ?, ?, ?)[0m  [["name", "Lakisha Ziemann"], ["email", "syble@hackett-powlowski.com"], ["birthdate", "1985-09-18"], ["created_at", "2022-07-02 14:28:45.663558"], ["updated_at", "2022-07-02 14:28:45.663558"]]
+  ↳ lib/tasks/dev.rake:6:in `block (3 levels) in <main>'
+  [1m[36mTRANSACTION (2.3ms)[0m  [1m[36mcommit transaction[0m
+  ↳ lib/tasks/dev.rake:6:in `block (3 levels) in <main>'
+  [1m[36mTRANSACTION (0.0ms)[0m  [1m[36mbegin transaction[0m
+  ↳ lib/tasks/dev.rake:6:in `block (3 levels) in <main>'
+  [1m[36mContact Create (0.1ms)[0m  [1m[32mINSERT INTO "contacts" ("name", "email", "birthdate", "created_at", "updated_at") VALUES (?, ?, ?, ?, ?)[0m  [["name", "Genaro Kuhic"], ["email", "erasmo@glover.biz"], ["birthdate", "1990-01-17"], ["created_at", "2022-07-02 14:28:45.668149"], ["updated_at", "2022-07-02 14:28:45.668149"]]
+  ↳ lib/tasks/dev.rake:6:in `block (3 levels) in <main>'
+  [1m[36mTRANSACTION (2.2ms)[0m  [1m[36mcommit transaction[0m
+  ↳ lib/tasks/dev.rake:6:in `block (3 levels) in <main>'
+  [1m[36mTRANSACTION (0.0ms)[0m  [1m[36mbegin transaction[0m
+  ↳ lib/tasks/dev.rake:6:in `block (3 levels) in <main>'
+  [1m[36mContact Create (0.1ms)[0m  [1m[32mINSERT INTO "contacts" ("name", "email", "birthdate", "created_at", "updated_at") VALUES (?, ?, ?, ?, ?)[0m  [["name", "Dr. Alva Conroy"], ["email", "gene.willms@berge.info"], ["birthdate", "1986-09-03"], ["created_at", "2022-07-02 14:28:45.672721"], ["updated_at", "2022-07-02 14:28:45.672721"]]
+  ↳ lib/tasks/dev.rake:6:in `block (3 levels) in <main>'
+  [1m[36mTRANSACTION (2.4ms)[0m  [1m[36mcommit transaction[0m
+  ↳ lib/tasks/dev.rake:6:in `block (3 levels) in <main>'
+  [1m[36mTRANSACTION (0.0ms)[0m  [1m[36mbegin transaction[0m
+  ↳ lib/tasks/dev.rake:6:in `block (3 levels) in <main>'
+  [1m[36mContact Create (0.1ms)[0m  [1m[32mINSERT INTO "contacts" ("name", "email", "birthdate", "created_at", "updated_at") VALUES (?, ?, ?, ?, ?)[0m  [["name", "Alonzo Hegmann PhD"], ["email", "marry_hermiston@dicki.co"], ["birthdate", "1983-11-20"], ["created_at", "2022-07-02 14:28:45.677402"], ["updated_at", "2022-07-02 14:28:45.677402"]]
+  ↳ lib/tasks/dev.rake:6:in `block (3 levels) in <main>'
+  [1m[36mTRANSACTION (2.5ms)[0m  [1m[36mcommit transaction[0m
+  ↳ lib/tasks/dev.rake:6:in `block (3 levels) in <main>'
+  [1m[36mTRANSACTION (0.0ms)[0m  [1m[36mbegin transaction[0m
+  ↳ lib/tasks/dev.rake:6:in `block (3 levels) in <main>'
+  [1m[36mContact Create (0.1ms)[0m  [1m[32mINSERT INTO "contacts" ("name", "email", "birthdate", "created_at", "updated_at") VALUES (?, ?, ?, ?, ?)[0m  [["name", "Cathey Schmitt"], ["email", "alonso.schaefer@cole.net"], ["birthdate", "1965-02-11"], ["created_at", "2022-07-02 14:28:45.682131"], ["updated_at", "2022-07-02 14:28:45.682131"]]
+  ↳ lib/tasks/dev.rake:6:in `block (3 levels) in <main>'
+  [1m[36mTRANSACTION (2.0ms)[0m  [1m[36mcommit transaction[0m
+  ↳ lib/tasks/dev.rake:6:in `block (3 levels) in <main>'
+  [1m[36mTRANSACTION (0.0ms)[0m  [1m[36mbegin transaction[0m
+  ↳ lib/tasks/dev.rake:6:in `block (3 levels) in <main>'
+  [1m[36mContact Create (0.1ms)[0m  [1m[32mINSERT INTO "contacts" ("name", "email", "birthdate", "created_at", "updated_at") VALUES (?, ?, ?, ?, ?)[0m  [["name", "Dusty Bartoletti"], ["email", "lenard_fay@erdman.io"], ["birthdate", "1973-05-09"], ["created_at", "2022-07-02 14:28:45.686477"], ["updated_at", "2022-07-02 14:28:45.686477"]]
+  ↳ lib/tasks/dev.rake:6:in `block (3 levels) in <main>'
+  [1m[36mTRANSACTION (2.3ms)[0m  [1m[36mcommit transaction[0m
+  ↳ lib/tasks/dev.rake:6:in `block (3 levels) in <main>'
+  [1m[36mTRANSACTION (0.0ms)[0m  [1m[36mbegin transaction[0m
+  ↳ lib/tasks/dev.rake:6:in `block (3 levels) in <main>'
+  [1m[36mContact Create (0.1ms)[0m  [1m[32mINSERT INTO "contacts" ("name", "email", "birthdate", "created_at", "updated_at") VALUES (?, ?, ?, ?, ?)[0m  [["name", "Joan Stanton"], ["email", "phyllis@will.org"], ["birthdate", "2000-02-13"], ["created_at", "2022-07-02 14:28:45.691093"], ["updated_at", "2022-07-02 14:28:45.691093"]]
+  ↳ lib/tasks/dev.rake:6:in `block (3 levels) in <main>'
+  [1m[36mTRANSACTION (2.2ms)[0m  [1m[36mcommit transaction[0m
+  ↳ lib/tasks/dev.rake:6:in `block (3 levels) in <main>'
+  [1m[35m (0.2ms)[0m  [1m[34mSELECT sqlite_version(*)[0m
+  [1m[36mActiveRecord::SchemaMigration Pluck (0.1ms)[0m  [1m[34mSELECT "schema_migrations"."version" FROM "schema_migrations" ORDER BY "schema_migrations"."version" ASC[0m
+Migrating to AddKindToContact (20220702141006)
+  [1m[36mTRANSACTION (0.0ms)[0m  [1m[36mbegin transaction[0m
+  [1m[35m (0.0ms)[0m  [1m[35mPRAGMA foreign_keys[0m
+  [1m[35m (0.0ms)[0m  [1m[35mPRAGMA defer_foreign_keys[0m
+  [1m[35m (0.0ms)[0m  [1m[35mPRAGMA defer_foreign_keys = ON[0m
+  [1m[35m (0.0ms)[0m  [1m[35mPRAGMA foreign_keys = OFF[0m
+  [1m[35m (0.1ms)[0m  [1m[35mCREATE TEMPORARY TABLE "acontacts" ("id" integer NOT NULL PRIMARY KEY, "name" varchar DEFAULT NULL, "email" varchar DEFAULT NULL, "birthdate" date DEFAULT NULL, "created_at" datetime(6) NOT NULL, "updated_at" datetime(6) NOT NULL)[0m
+  [1m[35m (0.1ms)[0m  [1m[32mINSERT INTO "acontacts" ("id","name","email","birthdate","created_at","updated_at")
+                     SELECT "id","name","email","birthdate","created_at","updated_at" FROM "contacts"[0m
+  [1m[35m (0.2ms)[0m  [1m[35mDROP TABLE "contacts"[0m
+  [1m[35m (0.1ms)[0m  [1m[35mCREATE TABLE "contacts" ("id" integer NOT NULL PRIMARY KEY, "name" varchar DEFAULT NULL, "email" varchar DEFAULT NULL, "birthdate" date DEFAULT NULL, "created_at" datetime(6) NOT NULL, "updated_at" datetime(6) NOT NULL, "kind_id" integer NOT NULL)[0m
+  [1m[35m (0.1ms)[0m  [1m[32mINSERT INTO "contacts" ("id","name","email","birthdate","created_at","updated_at")
+                     SELECT "id","name","email","birthdate","created_at","updated_at" FROM "acontacts"[0m
+  [1m[35m (0.0ms)[0m  [1m[35mPRAGMA defer_foreign_keys = 0[0m
+  [1m[35m (0.0ms)[0m  [1m[35mPRAGMA foreign_keys = 1[0m
+  [1m[36mTRANSACTION (0.1ms)[0m  [1m[31mrollback transaction[0m
+  [1m[35m (0.3ms)[0m  [1m[34mSELECT sqlite_version(*)[0m
+  [1m[36mActiveRecord::SchemaMigration Pluck (0.1ms)[0m  [1m[34mSELECT "schema_migrations"."version" FROM "schema_migrations" ORDER BY "schema_migrations"."version" ASC[0m
+Migrating to AddKindToContact (20220702141006)
+  [1m[36mTRANSACTION (0.0ms)[0m  [1m[36mbegin transaction[0m
+  [1m[35m (0.3ms)[0m  [1m[35mALTER TABLE "contacts" ADD "kind_id" integer[0m
+  [1m[35m (0.1ms)[0m  [1m[35mCREATE INDEX "index_contacts_on_kind_id" ON "contacts" ("kind_id")[0m
+  [1m[35m (0.0ms)[0m  [1m[35mPRAGMA foreign_keys[0m
+  [1m[35m (0.0ms)[0m  [1m[35mPRAGMA defer_foreign_keys[0m
+  [1m[35m (0.0ms)[0m  [1m[35mPRAGMA defer_foreign_keys = ON[0m
+  [1m[35m (0.0ms)[0m  [1m[35mPRAGMA foreign_keys = OFF[0m
+  [1m[35m (0.1ms)[0m  [1m[35mCREATE TEMPORARY TABLE "acontacts" ("id" integer NOT NULL PRIMARY KEY, "name" varchar DEFAULT NULL, "email" varchar DEFAULT NULL, "birthdate" date DEFAULT NULL, "created_at" datetime(6) NOT NULL, "updated_at" datetime(6) NOT NULL, "kind_id" integer DEFAULT NULL)[0m
+  [1m[35m (0.1ms)[0m  [1m[35mCREATE INDEX "tindex_acontacts_on_kind_id" ON "acontacts" ("kind_id")[0m
+  [1m[35m (0.1ms)[0m  [1m[32mINSERT INTO "acontacts" ("id","name","email","birthdate","created_at","updated_at","kind_id")
+                     SELECT "id","name","email","birthdate","created_at","updated_at","kind_id" FROM "contacts"[0m
+  [1m[35m (0.2ms)[0m  [1m[35mDROP TABLE "contacts"[0m
+  [1m[35m (0.1ms)[0m  [1m[35mCREATE TABLE "contacts" ("id" integer NOT NULL PRIMARY KEY, "name" varchar DEFAULT NULL, "email" varchar DEFAULT NULL, "birthdate" date DEFAULT NULL, "created_at" datetime(6) NOT NULL, "updated_at" datetime(6) NOT NULL, "kind_id" integer DEFAULT NULL, CONSTRAINT "fk_rails_c1f4bf4c44"
+FOREIGN KEY ("kind_id")
+  REFERENCES "kinds" ("id")
+)[0m
+  [1m[35m (0.1ms)[0m  [1m[35mCREATE INDEX "index_contacts_on_kind_id" ON "contacts" ("kind_id")[0m
+  [1m[35m (0.1ms)[0m  [1m[32mINSERT INTO "contacts" ("id","name","email","birthdate","created_at","updated_at","kind_id")
+                     SELECT "id","name","email","birthdate","created_at","updated_at","kind_id" FROM "acontacts"[0m
+  [1m[35m (0.0ms)[0m  [1m[35mPRAGMA defer_foreign_keys = 0[0m
+  [1m[35m (0.0ms)[0m  [1m[35mPRAGMA foreign_keys = 1[0m
+  [1m[36mTRANSACTION (0.2ms)[0m  [1m[31mrollback transaction[0m
+  [1m[35m (0.2ms)[0m  [1m[34mSELECT sqlite_version(*)[0m
+  [1m[36mActiveRecord::SchemaMigration Pluck (0.1ms)[0m  [1m[34mSELECT "schema_migrations"."version" FROM "schema_migrations" ORDER BY "schema_migrations"."version" ASC[0m
+  [1m[36mActiveRecord::InternalMetadata Pluck (0.1ms)[0m  [1m[34mSELECT "ar_internal_metadata"."value" FROM "ar_internal_metadata" WHERE "ar_internal_metadata"."key" = ? LIMIT ?[0m  [["key", "environment"], ["LIMIT", 1]]
+  [1m[35m (0.3ms)[0m  [1m[34mSELECT sqlite_version(*)[0m
+  [1m[36mActiveRecord::InternalMetadata Load (0.1ms)[0m  [1m[34mSELECT "ar_internal_metadata".* FROM "ar_internal_metadata" WHERE "ar_internal_metadata"."key" = ? LIMIT ?[0m  [["key", "environment"], ["LIMIT", 1]]
+  [1m[36mTRANSACTION (0.0ms)[0m  [1m[36mbegin transaction[0m
+  [1m[36mActiveRecord::InternalMetadata Create (0.2ms)[0m  [1m[32mINSERT INTO "ar_internal_metadata" ("key", "value", "created_at", "updated_at") VALUES (?, ?, ?, ?)[0m  [["key", "environment"], ["value", "development"], ["created_at", "2022-07-02 14:45:06.029223"], ["updated_at", "2022-07-02 14:45:06.029223"]]
+  [1m[36mTRANSACTION (5.5ms)[0m  [1m[36mcommit transaction[0m
+  [1m[35m (0.3ms)[0m  [1m[34mSELECT sqlite_version(*)[0m
+  [1m[36mActiveRecord::SchemaMigration Pluck (0.1ms)[0m  [1m[34mSELECT "schema_migrations"."version" FROM "schema_migrations" ORDER BY "schema_migrations"."version" ASC[0m
+  [1m[36mActiveRecord::InternalMetadata Pluck (0.1ms)[0m  [1m[34mSELECT "ar_internal_metadata"."value" FROM "ar_internal_metadata" WHERE "ar_internal_metadata"."key" = ? LIMIT ?[0m  [["key", "environment"], ["LIMIT", 1]]
+  [1m[36mActiveRecord::SchemaMigration Pluck (0.0ms)[0m  [1m[34mSELECT "schema_migrations"."version" FROM "schema_migrations" ORDER BY "schema_migrations"."version" ASC[0m
+  [1m[36mActiveRecord::InternalMetadata Pluck (0.0ms)[0m  [1m[34mSELECT "ar_internal_metadata"."value" FROM "ar_internal_metadata" WHERE "ar_internal_metadata"."key" = ? LIMIT ?[0m  [["key", "environment"], ["LIMIT", 1]]
+  [1m[36mActiveRecord::SchemaMigration Pluck (0.0ms)[0m  [1m[34mSELECT "schema_migrations"."version" FROM "schema_migrations" ORDER BY "schema_migrations"."version" ASC[0m
+  [1m[36mActiveRecord::InternalMetadata Pluck (0.0ms)[0m  [1m[34mSELECT "ar_internal_metadata"."value" FROM "ar_internal_metadata" WHERE "ar_internal_metadata"."key" = ? LIMIT ?[0m  [["key", "environment"], ["LIMIT", 1]]
+  [1m[35m (0.0ms)[0m  [1m[34mSELECT sqlite_version(*)[0m
+  [1m[35m (0.0ms)[0m  [1m[34mSELECT sqlite_version(*)[0m
+  [1m[35m (0.0ms)[0m  [1m[34mSELECT sqlite_version(*)[0m
+  [1m[35m (3.4ms)[0m  [1m[35mCREATE TABLE "schema_migrations" ("version" varchar NOT NULL PRIMARY KEY)[0m
+  [1m[35m (3.0ms)[0m  [1m[35mCREATE TABLE "ar_internal_metadata" ("key" varchar NOT NULL PRIMARY KEY, "value" varchar, "created_at" datetime(6) NOT NULL, "updated_at" datetime(6) NOT NULL)[0m
+  [1m[36mActiveRecord::SchemaMigration Pluck (0.1ms)[0m  [1m[34mSELECT "schema_migrations"."version" FROM "schema_migrations" ORDER BY "schema_migrations"."version" ASC[0m
+Migrating to CreateContacts (20220702140705)
+  [1m[36mTRANSACTION (0.1ms)[0m  [1m[36mbegin transaction[0m
+  [1m[35m (0.2ms)[0m  [1m[35mCREATE TABLE "contacts" ("id" integer PRIMARY KEY AUTOINCREMENT NOT NULL, "name" varchar, "email" varchar, "birthdate" date, "created_at" datetime(6) NOT NULL, "updated_at" datetime(6) NOT NULL)[0m
+  [1m[36mActiveRecord::SchemaMigration Create (0.1ms)[0m  [1m[32mINSERT INTO "schema_migrations" ("version") VALUES (?)[0m  [["version", "20220702140705"]]
+  [1m[36mTRANSACTION (3.0ms)[0m  [1m[36mcommit transaction[0m
+Migrating to AddKindToContact (20220702141006)
+  [1m[36mTRANSACTION (0.0ms)[0m  [1m[36mbegin transaction[0m
+  [1m[35m (0.3ms)[0m  [1m[35mALTER TABLE "contacts" ADD "kind_id" integer[0m
+  [1m[35m (0.1ms)[0m  [1m[35mCREATE INDEX "index_contacts_on_kind_id" ON "contacts" ("kind_id")[0m
+  [1m[35m (0.0ms)[0m  [1m[35mPRAGMA foreign_keys[0m
+  [1m[35m (0.0ms)[0m  [1m[35mPRAGMA defer_foreign_keys[0m
+  [1m[35m (0.0ms)[0m  [1m[35mPRAGMA defer_foreign_keys = ON[0m
+  [1m[35m (0.0ms)[0m  [1m[35mPRAGMA foreign_keys = OFF[0m
+  [1m[35m (0.1ms)[0m  [1m[35mCREATE TEMPORARY TABLE "acontacts" ("id" integer NOT NULL PRIMARY KEY, "name" varchar DEFAULT NULL, "email" varchar DEFAULT NULL, "birthdate" date DEFAULT NULL, "created_at" datetime(6) NOT NULL, "updated_at" datetime(6) NOT NULL, "kind_id" integer DEFAULT NULL)[0m
+  [1m[35m (0.1ms)[0m  [1m[35mCREATE INDEX "tindex_acontacts_on_kind_id" ON "acontacts" ("kind_id")[0m
+  [1m[35m (0.0ms)[0m  [1m[32mINSERT INTO "acontacts" ("id","name","email","birthdate","created_at","updated_at","kind_id")
+                     SELECT "id","name","email","birthdate","created_at","updated_at","kind_id" FROM "contacts"[0m
+  [1m[35m (0.1ms)[0m  [1m[35mDROP TABLE "contacts"[0m
+  [1m[35m (0.1ms)[0m  [1m[35mCREATE TABLE "contacts" ("id" integer NOT NULL PRIMARY KEY, "name" varchar DEFAULT NULL, "email" varchar DEFAULT NULL, "birthdate" date DEFAULT NULL, "created_at" datetime(6) NOT NULL, "updated_at" datetime(6) NOT NULL, "kind_id" integer DEFAULT NULL, CONSTRAINT "fk_rails_c1f4bf4c44"
+FOREIGN KEY ("kind_id")
+  REFERENCES "kinds" ("id")
+)[0m
+  [1m[35m (0.1ms)[0m  [1m[35mCREATE INDEX "index_contacts_on_kind_id" ON "contacts" ("kind_id")[0m
+  [1m[35m (0.2ms)[0m  [1m[32mINSERT INTO "contacts" ("id","name","email","birthdate","created_at","updated_at","kind_id")
+                     SELECT "id","name","email","birthdate","created_at","updated_at","kind_id" FROM "acontacts"[0m
+  [1m[35m (0.1ms)[0m  [1m[35mPRAGMA defer_foreign_keys = 0[0m
+  [1m[35m (0.0ms)[0m  [1m[35mPRAGMA foreign_keys = 1[0m
+  [1m[36mTRANSACTION (0.1ms)[0m  [1m[31mrollback transaction[0m
+  [1m[35m (0.3ms)[0m  [1m[34mSELECT sqlite_version(*)[0m
+  ↳ lib/tasks/dev.rake:8:in `block (3 levels) in <main>'
+  [1m[35m (0.4ms)[0m  [1m[34mSELECT sqlite_version(*)[0m
+  ↳ lib/tasks/dev.rake:6:in `block (3 levels) in <main>'
+Started GET "/" for ::1 at 2022-07-02 11:52:38 -0300
+  [1m[35m (0.4ms)[0m  [1m[34mSELECT sqlite_version(*)[0m
+  [1m[36mActiveRecord::SchemaMigration Pluck (0.1ms)[0m  [1m[34mSELECT "schema_migrations"."version" FROM "schema_migrations" ORDER BY "schema_migrations"."version" ASC[0m
+  [1m[36mCACHE ActiveRecord::SchemaMigration Pluck (0.0ms)[0m  [1m[34mSELECT "schema_migrations"."version" FROM "schema_migrations" ORDER BY "schema_migrations"."version" ASC[0m
+  
+ActiveRecord::PendingMigrationError (
+
+Migrations are pending. To resolve this issue, run:
+
+        bin/rails db:migrate RAILS_ENV=development
+
+You have 2 pending migrations:
+
+20220702141006_add_kind_to_contact.rb
+20220702141105_create_kinds.rb
+
+
+):
+  
+activerecord (7.0.3) lib/active_record/migration.rb:627:in `check_pending!'
+activerecord (7.0.3) lib/active_record/migration.rb:592:in `block (2 levels) in call'
+activesupport (7.0.3) lib/active_support/file_update_checker.rb:83:in `execute'
+activerecord (7.0.3) lib/active_record/migration.rb:597:in `block in call'
+activerecord (7.0.3) lib/active_record/migration.rb:589:in `synchronize'
+activerecord (7.0.3) lib/active_record/migration.rb:589:in `call'
+actionpack (7.0.3) lib/action_dispatch/middleware/callbacks.rb:27:in `block in call'
+activesupport (7.0.3) lib/active_support/callbacks.rb:99:in `run_callbacks'
+actionpack (7.0.3) lib/action_dispatch/middleware/callbacks.rb:26:in `call'
+actionpack (7.0.3) lib/action_dispatch/middleware/executor.rb:14:in `call'
+actionpack (7.0.3) lib/action_dispatch/middleware/actionable_exceptions.rb:17:in `call'
+actionpack (7.0.3) lib/action_dispatch/middleware/debug_exceptions.rb:28:in `call'
+actionpack (7.0.3) lib/action_dispatch/middleware/show_exceptions.rb:26:in `call'
+railties (7.0.3) lib/rails/rack/logger.rb:40:in `call_app'
+railties (7.0.3) lib/rails/rack/logger.rb:25:in `block in call'
+activesupport (7.0.3) lib/active_support/tagged_logging.rb:114:in `block in tagged'
+activesupport (7.0.3) lib/active_support/tagged_logging.rb:38:in `tagged'
+activesupport (7.0.3) lib/active_support/tagged_logging.rb:114:in `tagged'
+railties (7.0.3) lib/rails/rack/logger.rb:25:in `call'
+actionpack (7.0.3) lib/action_dispatch/middleware/remote_ip.rb:93:in `call'
+actionpack (7.0.3) lib/action_dispatch/middleware/request_id.rb:26:in `call'
+rack (2.2.4) lib/rack/runtime.rb:22:in `call'
+activesupport (7.0.3) lib/active_support/cache/strategy/local_cache_middleware.rb:29:in `call'
+actionpack (7.0.3) lib/action_dispatch/middleware/server_timing.rb:20:in `call'
+actionpack (7.0.3) lib/action_dispatch/middleware/executor.rb:14:in `call'
+actionpack (7.0.3) lib/action_dispatch/middleware/static.rb:23:in `call'
+rack (2.2.4) lib/rack/sendfile.rb:110:in `call'
+actionpack (7.0.3) lib/action_dispatch/middleware/host_authorization.rb:137:in `call'
+railties (7.0.3) lib/rails/engine.rb:530:in `call'
+puma (5.6.4) lib/puma/configuration.rb:252:in `call'
+puma (5.6.4) lib/puma/request.rb:77:in `block in handle_request'
+puma (5.6.4) lib/puma/thread_pool.rb:340:in `with_force_shutdown'
+puma (5.6.4) lib/puma/request.rb:76:in `handle_request'
+puma (5.6.4) lib/puma/server.rb:441:in `process_client'
+puma (5.6.4) lib/puma/thread_pool.rb:147:in `block in spawn_thread'
+Started GET "/favicon.ico" for ::1 at 2022-07-02 11:52:38 -0300
+  [1m[36mActiveRecord::SchemaMigration Pluck (0.0ms)[0m  [1m[34mSELECT "schema_migrations"."version" FROM "schema_migrations" ORDER BY "schema_migrations"."version" ASC[0m
+  [1m[36mCACHE ActiveRecord::SchemaMigration Pluck (0.0ms)[0m  [1m[34mSELECT "schema_migrations"."version" FROM "schema_migrations" ORDER BY "schema_migrations"."version" ASC[0m
+  
+ActiveRecord::PendingMigrationError (
+
+Migrations are pending. To resolve this issue, run:
+
+        bin/rails db:migrate RAILS_ENV=development
+
+You have 2 pending migrations:
+
+20220702141006_add_kind_to_contact.rb
+20220702141105_create_kinds.rb
+
+
+):
+  
+activerecord (7.0.3) lib/active_record/migration.rb:627:in `check_pending!'
+activerecord (7.0.3) lib/active_record/migration.rb:592:in `block (2 levels) in call'
+activesupport (7.0.3) lib/active_support/file_update_checker.rb:83:in `execute'
+activerecord (7.0.3) lib/active_record/migration.rb:597:in `block in call'
+activerecord (7.0.3) lib/active_record/migration.rb:589:in `synchronize'
+activerecord (7.0.3) lib/active_record/migration.rb:589:in `call'
+actionpack (7.0.3) lib/action_dispatch/middleware/callbacks.rb:27:in `block in call'
+activesupport (7.0.3) lib/active_support/callbacks.rb:99:in `run_callbacks'
+actionpack (7.0.3) lib/action_dispatch/middleware/callbacks.rb:26:in `call'
+actionpack (7.0.3) lib/action_dispatch/middleware/executor.rb:14:in `call'
+actionpack (7.0.3) lib/action_dispatch/middleware/actionable_exceptions.rb:17:in `call'
+actionpack (7.0.3) lib/action_dispatch/middleware/debug_exceptions.rb:28:in `call'
+actionpack (7.0.3) lib/action_dispatch/middleware/show_exceptions.rb:26:in `call'
+railties (7.0.3) lib/rails/rack/logger.rb:40:in `call_app'
+railties (7.0.3) lib/rails/rack/logger.rb:25:in `block in call'
+activesupport (7.0.3) lib/active_support/tagged_logging.rb:114:in `block in tagged'
+activesupport (7.0.3) lib/active_support/tagged_logging.rb:38:in `tagged'
+activesupport (7.0.3) lib/active_support/tagged_logging.rb:114:in `tagged'
+railties (7.0.3) lib/rails/rack/logger.rb:25:in `call'
+actionpack (7.0.3) lib/action_dispatch/middleware/remote_ip.rb:93:in `call'
+actionpack (7.0.3) lib/action_dispatch/middleware/request_id.rb:26:in `call'
+rack (2.2.4) lib/rack/runtime.rb:22:in `call'
+activesupport (7.0.3) lib/active_support/cache/strategy/local_cache_middleware.rb:29:in `call'
+actionpack (7.0.3) lib/action_dispatch/middleware/server_timing.rb:20:in `call'
+actionpack (7.0.3) lib/action_dispatch/middleware/executor.rb:14:in `call'
+actionpack (7.0.3) lib/action_dispatch/middleware/static.rb:23:in `call'
+rack (2.2.4) lib/rack/sendfile.rb:110:in `call'
+actionpack (7.0.3) lib/action_dispatch/middleware/host_authorization.rb:137:in `call'
+railties (7.0.3) lib/rails/engine.rb:530:in `call'
+puma (5.6.4) lib/puma/configuration.rb:252:in `call'
+puma (5.6.4) lib/puma/request.rb:77:in `block in handle_request'
+puma (5.6.4) lib/puma/thread_pool.rb:340:in `with_force_shutdown'
+puma (5.6.4) lib/puma/request.rb:76:in `handle_request'
+puma (5.6.4) lib/puma/server.rb:441:in `process_client'
+puma (5.6.4) lib/puma/thread_pool.rb:147:in `block in spawn_thread'
+Started POST "/rails/actions" for ::1 at 2022-07-02 11:52:48 -0300
+  [1m[36mActiveRecord::SchemaMigration Pluck (0.1ms)[0m  [1m[34mSELECT "schema_migrations"."version" FROM "schema_migrations" ORDER BY "schema_migrations"."version" ASC[0m
+Migrating to AddKindToContact (20220702141006)
+  [1m[36mTRANSACTION (0.1ms)[0m  [1m[36mbegin transaction[0m
+  [1m[35m (0.4ms)[0m  [1m[35mALTER TABLE "contacts" ADD "kind_id" integer[0m
+  [1m[35m (0.1ms)[0m  [1m[35mCREATE INDEX "index_contacts_on_kind_id" ON "contacts" ("kind_id")[0m
+  [1m[35m (0.0ms)[0m  [1m[35mPRAGMA foreign_keys[0m
+  [1m[35m (0.0ms)[0m  [1m[35mPRAGMA defer_foreign_keys[0m
+  [1m[35m (0.0ms)[0m  [1m[35mPRAGMA defer_foreign_keys = ON[0m
+  [1m[35m (0.0ms)[0m  [1m[35mPRAGMA foreign_keys = OFF[0m
+  [1m[35m (0.1ms)[0m  [1m[35mCREATE TEMPORARY TABLE "acontacts" ("id" integer NOT NULL PRIMARY KEY, "name" varchar DEFAULT NULL, "email" varchar DEFAULT NULL, "birthdate" date DEFAULT NULL, "created_at" datetime(6) NOT NULL, "updated_at" datetime(6) NOT NULL, "kind_id" integer DEFAULT NULL)[0m
+  [1m[35m (0.1ms)[0m  [1m[35mCREATE INDEX "tindex_acontacts_on_kind_id" ON "acontacts" ("kind_id")[0m
+  [1m[35m (0.0ms)[0m  [1m[32mINSERT INTO "acontacts" ("id","name","email","birthdate","created_at","updated_at","kind_id")
+                     SELECT "id","name","email","birthdate","created_at","updated_at","kind_id" FROM "contacts"[0m
+  [1m[35m (0.2ms)[0m  [1m[35mDROP TABLE "contacts"[0m
+  [1m[35m (0.1ms)[0m  [1m[35mCREATE TABLE "contacts" ("id" integer NOT NULL PRIMARY KEY, "name" varchar DEFAULT NULL, "email" varchar DEFAULT NULL, "birthdate" date DEFAULT NULL, "created_at" datetime(6) NOT NULL, "updated_at" datetime(6) NOT NULL, "kind_id" integer DEFAULT NULL, CONSTRAINT "fk_rails_c1f4bf4c44"
+FOREIGN KEY ("kind_id")
+  REFERENCES "kinds" ("id")
+)[0m
+  [1m[35m (0.1ms)[0m  [1m[35mCREATE INDEX "index_contacts_on_kind_id" ON "contacts" ("kind_id")[0m
+  [1m[35m (0.2ms)[0m  [1m[32mINSERT INTO "contacts" ("id","name","email","birthdate","created_at","updated_at","kind_id")
+                     SELECT "id","name","email","birthdate","created_at","updated_at","kind_id" FROM "acontacts"[0m
+  [1m[35m (0.0ms)[0m  [1m[35mPRAGMA defer_foreign_keys = 0[0m
+  [1m[35m (0.0ms)[0m  [1m[35mPRAGMA foreign_keys = 1[0m
+  [1m[36mTRANSACTION (0.2ms)[0m  [1m[31mrollback transaction[0m
+  
+StandardError (An error has occurred, this and all later migrations canceled:
+
+SQLite3::SQLException: no such table: main.kinds):
+  
+sqlite3 (1.4.4) lib/sqlite3/database.rb:152:in `initialize'
+sqlite3 (1.4.4) lib/sqlite3/database.rb:152:in `new'
+sqlite3 (1.4.4) lib/sqlite3/database.rb:152:in `prepare'
+activerecord (7.0.3) lib/active_record/connection_adapters/sqlite3/database_statements.rb:50:in `block (2 levels) in exec_query'
+activesupport (7.0.3) lib/active_support/concurrency/share_lock.rb:187:in `yield_shares'
+activesupport (7.0.3) lib/active_support/dependencies/interlock.rb:41:in `permit_concurrent_loads'
+activerecord (7.0.3) lib/active_record/connection_adapters/sqlite3/database_statements.rb:47:in `block in exec_query'
+activesupport (7.0.3) lib/active_support/concurrency/load_interlock_aware_monitor.rb:25:in `handle_interrupt'
+activesupport (7.0.3) lib/active_support/concurrency/load_interlock_aware_monitor.rb:25:in `block in synchronize'
+activesupport (7.0.3) lib/active_support/concurrency/load_interlock_aware_monitor.rb:21:in `handle_interrupt'
+activesupport (7.0.3) lib/active_support/concurrency/load_interlock_aware_monitor.rb:21:in `synchronize'
+activerecord (7.0.3) lib/active_record/connection_adapters/abstract_adapter.rb:765:in `block in log'
+activesupport (7.0.3) lib/active_support/notifications/instrumenter.rb:24:in `instrument'
+activerecord (7.0.3) lib/active_record/connection_adapters/abstract_adapter.rb:756:in `log'
+activerecord (7.0.3) lib/active_record/connection_adapters/sqlite3/database_statements.rb:46:in `exec_query'
+activerecord (7.0.3) lib/active_record/connection_adapters/sqlite3_adapter.rb:533:in `copy_table_contents'
+activerecord (7.0.3) lib/active_record/connection_adapters/sqlite3_adapter.rb:491:in `copy_table'
+activerecord (7.0.3) lib/active_record/connection_adapters/sqlite3_adapter.rb:461:in `move_table'
+activerecord (7.0.3) lib/active_record/connection_adapters/sqlite3_adapter.rb:455:in `block (2 levels) in alter_table'
+activerecord (7.0.3) lib/active_record/connection_adapters/sqlite3_adapter.rb:207:in `disable_referential_integrity'
+activerecord (7.0.3) lib/active_record/connection_adapters/sqlite3_adapter.rb:453:in `block in alter_table'
+activerecord (7.0.3) lib/active_record/connection_adapters/abstract/database_statements.rb:314:in `transaction'
+activerecord (7.0.3) lib/active_record/connection_adapters/sqlite3_adapter.rb:452:in `alter_table'
+activerecord (7.0.3) lib/active_record/connection_adapters/sqlite3/schema_statements.rb:56:in `add_foreign_key'
+activerecord (7.0.3) lib/active_record/connection_adapters/abstract/schema_definitions.rb:790:in `foreign_key'
+activerecord (7.0.3) lib/active_record/connection_adapters/abstract/schema_definitions.rb:184:in `add_to'
+activerecord (7.0.3) lib/active_record/connection_adapters/abstract/schema_statements.rb:989:in `add_reference'
+activerecord (7.0.3) lib/active_record/connection_adapters/sqlite3_adapter.rb:304:in `add_reference'
+activerecord (7.0.3) lib/active_record/migration.rb:932:in `block in method_missing'
+activerecord (7.0.3) lib/active_record/migration.rb:900:in `block in say_with_time'
+/usr/share/rvm/rubies/ruby-3.1.2/lib/ruby/3.1.0/benchmark.rb:296:in `measure'
+activerecord (7.0.3) lib/active_record/migration.rb:900:in `say_with_time'
+activerecord (7.0.3) lib/active_record/migration.rb:921:in `method_missing'
+db/migrate/20220702141006_add_kind_to_contact.rb:3:in `change'
+activerecord (7.0.3) lib/active_record/migration.rb:870:in `exec_migration'
+activerecord (7.0.3) lib/active_record/migration.rb:854:in `block (2 levels) in migrate'
+/usr/share/rvm/rubies/ruby-3.1.2/lib/ruby/3.1.0/benchmark.rb:296:in `measure'
+activerecord (7.0.3) lib/active_record/migration.rb:853:in `block in migrate'
+activerecord (7.0.3) lib/active_record/connection_adapters/abstract/connection_pool.rb:215:in `with_connection'
+activerecord (7.0.3) lib/active_record/migration.rb:852:in `migrate'
+activerecord (7.0.3) lib/active_record/migration.rb:1046:in `migrate'
+activerecord (7.0.3) lib/active_record/migration.rb:1360:in `block in execute_migration_in_transaction'
+activerecord (7.0.3) lib/active_record/connection_adapters/abstract/transaction.rb:319:in `block in within_new_transaction'
+activesupport (7.0.3) lib/active_support/concurrency/load_interlock_aware_monitor.rb:25:in `handle_interrupt'
+activesupport (7.0.3) lib/active_support/concurrency/load_interlock_aware_monitor.rb:25:in `block in synchronize'
+activesupport (7.0.3) lib/active_support/concurrency/load_interlock_aware_monitor.rb:21:in `handle_interrupt'
+activesupport (7.0.3) lib/active_support/concurrency/load_interlock_aware_monitor.rb:21:in `synchronize'
+activerecord (7.0.3) lib/active_record/connection_adapters/abstract/transaction.rb:317:in `within_new_transaction'
+activerecord (7.0.3) lib/active_record/connection_adapters/abstract/database_statements.rb:316:in `transaction'
+activerecord (7.0.3) lib/active_record/transactions.rb:209:in `transaction'
+activerecord (7.0.3) lib/active_record/migration.rb:1411:in `ddl_transaction'
+activerecord (7.0.3) lib/active_record/migration.rb:1359:in `execute_migration_in_transaction'
+activerecord (7.0.3) lib/active_record/migration.rb:1333:in `each'
+activerecord (7.0.3) lib/active_record/migration.rb:1333:in `migrate_without_lock'
+activerecord (7.0.3) lib/active_record/migration.rb:1284:in `migrate'
+activerecord (7.0.3) lib/active_record/migration.rb:1117:in `up'
+activerecord (7.0.3) lib/active_record/migration.rb:1092:in `migrate'
+activerecord (7.0.3) lib/active_record/tasks/database_tasks.rb:262:in `migrate'
+activerecord (7.0.3) lib/active_record/migration.rb:137:in `block in <class:PendingMigrationError>'
+activesupport (7.0.3) lib/active_support/actionable_error.rb:28:in `dispatch'
+actionpack (7.0.3) lib/action_dispatch/middleware/actionable_exceptions.rb:19:in `call'
+actionpack (7.0.3) lib/action_dispatch/middleware/debug_exceptions.rb:28:in `call'
+actionpack (7.0.3) lib/action_dispatch/middleware/show_exceptions.rb:26:in `call'
+railties (7.0.3) lib/rails/rack/logger.rb:40:in `call_app'
+railties (7.0.3) lib/rails/rack/logger.rb:25:in `block in call'
+activesupport (7.0.3) lib/active_support/tagged_logging.rb:114:in `block in tagged'
+activesupport (7.0.3) lib/active_support/tagged_logging.rb:38:in `tagged'
+activesupport (7.0.3) lib/active_support/tagged_logging.rb:114:in `tagged'
+railties (7.0.3) lib/rails/rack/logger.rb:25:in `call'
+actionpack (7.0.3) lib/action_dispatch/middleware/remote_ip.rb:93:in `call'
+actionpack (7.0.3) lib/action_dispatch/middleware/request_id.rb:26:in `call'
+rack (2.2.4) lib/rack/runtime.rb:22:in `call'
+activesupport (7.0.3) lib/active_support/cache/strategy/local_cache_middleware.rb:29:in `call'
+actionpack (7.0.3) lib/action_dispatch/middleware/server_timing.rb:20:in `call'
+actionpack (7.0.3) lib/action_dispatch/middleware/executor.rb:14:in `call'
+actionpack (7.0.3) lib/action_dispatch/middleware/static.rb:23:in `call'
+rack (2.2.4) lib/rack/sendfile.rb:110:in `call'
+actionpack (7.0.3) lib/action_dispatch/middleware/host_authorization.rb:137:in `call'
+railties (7.0.3) lib/rails/engine.rb:530:in `call'
+puma (5.6.4) lib/puma/configuration.rb:252:in `call'
+puma (5.6.4) lib/puma/request.rb:77:in `block in handle_request'
+puma (5.6.4) lib/puma/thread_pool.rb:340:in `with_force_shutdown'
+puma (5.6.4) lib/puma/request.rb:76:in `handle_request'
+puma (5.6.4) lib/puma/server.rb:441:in `process_client'
+puma (5.6.4) lib/puma/thread_pool.rb:147:in `block in spawn_thread'
+Started GET "/favicon.ico" for ::1 at 2022-07-02 11:52:48 -0300
+  [1m[36mActiveRecord::SchemaMigration Pluck (0.1ms)[0m  [1m[34mSELECT "schema_migrations"."version" FROM "schema_migrations" ORDER BY "schema_migrations"."version" ASC[0m
+  [1m[36mCACHE ActiveRecord::SchemaMigration Pluck (0.0ms)[0m  [1m[34mSELECT "schema_migrations"."version" FROM "schema_migrations" ORDER BY "schema_migrations"."version" ASC[0m
+  
+ActiveRecord::PendingMigrationError (
+
+Migrations are pending. To resolve this issue, run:
+
+        bin/rails db:migrate RAILS_ENV=development
+
+You have 2 pending migrations:
+
+20220702141006_add_kind_to_contact.rb
+20220702141105_create_kinds.rb
+
+
+):
+  
+activerecord (7.0.3) lib/active_record/migration.rb:627:in `check_pending!'
+activerecord (7.0.3) lib/active_record/migration.rb:592:in `block (2 levels) in call'
+activesupport (7.0.3) lib/active_support/file_update_checker.rb:83:in `execute'
+activerecord (7.0.3) lib/active_record/migration.rb:597:in `block in call'
+activerecord (7.0.3) lib/active_record/migration.rb:589:in `synchronize'
+activerecord (7.0.3) lib/active_record/migration.rb:589:in `call'
+actionpack (7.0.3) lib/action_dispatch/middleware/callbacks.rb:27:in `block in call'
+activesupport (7.0.3) lib/active_support/callbacks.rb:99:in `run_callbacks'
+actionpack (7.0.3) lib/action_dispatch/middleware/callbacks.rb:26:in `call'
+actionpack (7.0.3) lib/action_dispatch/middleware/executor.rb:14:in `call'
+actionpack (7.0.3) lib/action_dispatch/middleware/actionable_exceptions.rb:17:in `call'
+actionpack (7.0.3) lib/action_dispatch/middleware/debug_exceptions.rb:28:in `call'
+actionpack (7.0.3) lib/action_dispatch/middleware/show_exceptions.rb:26:in `call'
+railties (7.0.3) lib/rails/rack/logger.rb:40:in `call_app'
+railties (7.0.3) lib/rails/rack/logger.rb:25:in `block in call'
+activesupport (7.0.3) lib/active_support/tagged_logging.rb:114:in `block in tagged'
+activesupport (7.0.3) lib/active_support/tagged_logging.rb:38:in `tagged'
+activesupport (7.0.3) lib/active_support/tagged_logging.rb:114:in `tagged'
+railties (7.0.3) lib/rails/rack/logger.rb:25:in `call'
+actionpack (7.0.3) lib/action_dispatch/middleware/remote_ip.rb:93:in `call'
+actionpack (7.0.3) lib/action_dispatch/middleware/request_id.rb:26:in `call'
+rack (2.2.4) lib/rack/runtime.rb:22:in `call'
+activesupport (7.0.3) lib/active_support/cache/strategy/local_cache_middleware.rb:29:in `call'
+actionpack (7.0.3) lib/action_dispatch/middleware/server_timing.rb:20:in `call'
+actionpack (7.0.3) lib/action_dispatch/middleware/executor.rb:14:in `call'
+actionpack (7.0.3) lib/action_dispatch/middleware/static.rb:23:in `call'
+rack (2.2.4) lib/rack/sendfile.rb:110:in `call'
+actionpack (7.0.3) lib/action_dispatch/middleware/host_authorization.rb:137:in `call'
+railties (7.0.3) lib/rails/engine.rb:530:in `call'
+puma (5.6.4) lib/puma/configuration.rb:252:in `call'
+puma (5.6.4) lib/puma/request.rb:77:in `block in handle_request'
+puma (5.6.4) lib/puma/thread_pool.rb:340:in `with_force_shutdown'
+puma (5.6.4) lib/puma/request.rb:76:in `handle_request'
+puma (5.6.4) lib/puma/server.rb:441:in `process_client'
+puma (5.6.4) lib/puma/thread_pool.rb:147:in `block in spawn_thread'
